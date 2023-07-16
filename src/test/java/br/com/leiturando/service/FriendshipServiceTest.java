@@ -3,24 +3,23 @@ package br.com.leiturando.service;
 import br.com.leiturando.controller.response.UserResponse;
 import br.com.leiturando.entity.Friendship;
 import br.com.leiturando.entity.User;
-import br.com.leiturando.entity.UserTest;
 import br.com.leiturando.mapper.UserMapper;
 import br.com.leiturando.repository.FriendshipRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 import static br.com.leiturando.Consts.PASSWORD_DEFAULT;
 import static org.mockito.Mockito.when;
-import static org.junit.Assert.assertEquals;
 
-@RunWith(SpringRunner.class)
-public class FriendshipServiceTest {
+@ExtendWith(MockitoExtension.class)
+class FriendshipServiceTest {
     @InjectMocks
     FriendshipService friendshipService;
 
@@ -35,9 +34,8 @@ public class FriendshipServiceTest {
     UserResponse userResponse;
     List<Friendship> friendship;
 
-    @Before
+    @BeforeEach
     public void init() {
-        user1 = UserTest.builderUser();
         user2 = User.builder()
                 .id(2L)
                 .name("rogerio")
@@ -51,44 +49,55 @@ public class FriendshipServiceTest {
                 .urlImage(user2.getImageUrl())
                 .name(user2.getName())
                 .build();
-        friendship = List.of(new Friendship(1L, user1, user2));
+        user1 = User.builder()
+                .id(1L)
+                .name("gustavo")
+                .email("gustavo@gmail.com")
+                .password(PASSWORD_DEFAULT)
+                .imageUrl("Batman")
+                .level(1)
+                .breakthrough(0)
+                .friendships(friendship)
+                .build();
+        friendship = List.of(Friendship
+                .builder()
+                        .id(1L)
+                        .user(user1)
+                        .friend(user2)
+                .build());
     }
 
     @Test
-    public void listFriendshipUserSuccess() {
-        user1.setFriendships(friendship);
-
+    void listFriendshipUserSuccess() {
         when(friendshipRepository.findAllByUserOrFriend(user1)).thenReturn(friendship);
         when(userMapper.userToResponse(user2)).thenReturn(userResponse);
 
         var result = friendshipService.listFriendship(user1);
 
-        assertEquals(List.of(userResponse), result);
+        Assertions.assertEquals(List.of(userResponse), result);
     }
 
     @Test
-    public void listFriendshipUserFriendSuccess() {
+    void listFriendshipUserFriendSuccess() {
         friendship = List.of(new Friendship(1L, user2, user1));
-        user1.setFriendships(friendship);
 
         when(friendshipRepository.findAllByUserOrFriend(user1)).thenReturn(friendship);
         when(userMapper.userToResponse(user2)).thenReturn(userResponse);
 
         var result = friendshipService.listFriendship(user1);
 
-        assertEquals(List.of(userResponse), result);
+        Assertions.assertEquals(List.of(userResponse), result);
     }
 
     @Test
-    public void listFriendshipUserNotFriend() {
+    void listFriendshipUserNotFriend() {
         friendship = List.of();
 
         when(friendshipRepository.findAllByUserOrFriend(user1)).thenReturn(friendship);
-        when(userMapper.userToResponse(user2)).thenReturn(userResponse);
 
         var result = friendshipService.listFriendship(user1);
 
-        assertEquals(0, result.size());
+        Assertions.assertEquals(0, result.size());
     }
 }
 

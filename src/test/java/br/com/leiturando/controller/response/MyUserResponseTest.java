@@ -1,14 +1,10 @@
 package br.com.leiturando.controller.response;
 
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-@RunWith(SpringRunner.class)
 public class MyUserResponseTest {
     public static MyUserResponse builderMyUserResponse() {
         return MyUserResponse
@@ -24,15 +20,15 @@ public class MyUserResponseTest {
     }
 
     @Test
-    public void buildMyUserResponseCorrectly() {
+    void buildMyUserResponseCorrectly() {
         var myUserResponse = builderMyUserResponse();
 
-        Assert.assertNotNull(myUserResponse.getImageUrl());
-        Assert.assertNotNull(myUserResponse.getName());
-        Assert.assertNotNull(myUserResponse.getLevel());
-        Assert.assertNotNull(myUserResponse.getBreakthrough());
-        Assert.assertNotNull(myUserResponse.getFriends());
-        Assert.assertNotNull(myUserResponse.getRequests());
-        Assert.assertNotNull(myUserResponse.getUsersRecomended());
+        Assertions.assertNotNull(myUserResponse.getImageUrl());
+        Assertions.assertNotNull(myUserResponse.getName());
+        Assertions.assertNotNull(myUserResponse.getLevel());
+        Assertions.assertNotNull(myUserResponse.getBreakthrough());
+        Assertions.assertNotNull(myUserResponse.getFriends());
+        Assertions.assertNotNull(myUserResponse.getRequests());
+        Assertions.assertNotNull(myUserResponse.getUsersRecomended());
     }
 }

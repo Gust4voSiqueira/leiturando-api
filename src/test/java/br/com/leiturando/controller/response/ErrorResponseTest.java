@@ -1,12 +1,9 @@
 package br.com.leiturando.controller.response;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-@RunWith(SpringRunner.class)
-public class ErrorResponseTest {
+class ErrorResponseTest {
     public static ErrorResponse builderErrorResponse() {
         return ErrorResponse
                 .builder()
@@ -15,10 +12,10 @@ public class ErrorResponseTest {
     }
 
     @Test
-    public void buildRegisterErrorResponseCorrectly() {
+    void buildRegisterErrorResponseCorrectly() {
         var errorResponse = builderErrorResponse();
         String expected = "Mensagem de erro";
 
-        Assert.assertEquals(expected, errorResponse.getMessage());
+        Assertions.assertEquals(expected, errorResponse.getMessage());
     }
 }

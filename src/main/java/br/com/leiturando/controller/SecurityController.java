@@ -22,10 +22,15 @@ public class SecurityController {
     @ResponseBody
     @Secured({Const.ROLE_CLIENT, Const.ROLE_ADMIN})
     public MyUserResponse user() {
-        User user = (User) SecurityContextHolder.getContext()
-                .getAuthentication()
-                .getPrincipal();
+        try {
+            User user = (User) SecurityContextHolder.getContext()
+                    .getAuthentication()
+                    .getPrincipal();
 
-        return myUserService.myUserService(user.getEmail());
+            return myUserService.myUserService(user.getEmail());
+        } catch (NullPointerException e) {
+            throw new NullPointerException("Você precisa de um token para acessar.");
+        }
+
     }
 }

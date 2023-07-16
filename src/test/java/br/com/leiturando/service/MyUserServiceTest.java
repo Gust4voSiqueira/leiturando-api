@@ -1,6 +1,5 @@
 package br.com.leiturando.service;
 
-
 import br.com.leiturando.controller.response.ListRequestsResponse;
 import br.com.leiturando.controller.response.MyUserResponse;
 import br.com.leiturando.controller.response.RecommendedFriendsResponse;
@@ -9,23 +8,23 @@ import br.com.leiturando.entity.UserTest;
 import br.com.leiturando.mapper.MyUserMapper;
 import br.com.leiturando.mapper.UserMapper;
 import br.com.leiturando.repository.UserRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
 import static br.com.leiturando.Consts.PASSWORD_DEFAULT;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-public class MyUserServiceTest {
+@ExtendWith(MockitoExtension.class)
+class MyUserServiceTest {
     @InjectMocks
     MyUserService myUserService;
 
@@ -53,7 +52,7 @@ public class MyUserServiceTest {
     RecommendedFriendsResponse recommendedFriendsResponse2;
     MyUserResponse myUserResponse;
 
-    @Before
+    @BeforeEach
     public void init() {
         user = UserTest.builderUser();
         user2 = User.builder()
@@ -107,7 +106,7 @@ public class MyUserServiceTest {
     }
 
     @Test
-    public void myUserServiceTest() {
+    void myUserServiceTest() {
         PageRequest firstPageWithTwoElements = PageRequest.of(0, 10);
 
         when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
@@ -123,9 +122,9 @@ public class MyUserServiceTest {
 
         var result = myUserService.myUserService(user.getEmail());
 
-        assertEquals(myUserResponse.getName(), result.getName());
-        assertEquals(myUserResponse.getRequests(), result.getRequests());
-        assertEquals(myUserResponse.getUsersRecomended(), result.getUsersRecomended());
-        assertEquals(myUserResponse.getFriends(), result.getFriends());
+        Assertions.assertEquals(myUserResponse.getName(), result.getName());
+        Assertions.assertEquals(myUserResponse.getRequests(), result.getRequests());
+        Assertions.assertEquals(myUserResponse.getUsersRecomended(), result.getUsersRecomended());
+        Assertions.assertEquals(myUserResponse.getFriends(), result.getFriends());
     }
 }

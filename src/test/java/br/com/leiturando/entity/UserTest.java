@@ -1,17 +1,12 @@
 package br.com.leiturando.entity;
 
-
 import br.com.leiturando.domain.Const;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 import static br.com.leiturando.Consts.PASSWORD_DEFAULT;
-import static org.junit.Assert.assertNotNull;
-
-@RunWith(SpringRunner.class)
 public class UserTest {
 
     public static User builderUser() {
@@ -30,16 +25,16 @@ public class UserTest {
     }
 
     @Test
-    public void buildUserCorrectly(){
+    void buildUserCorrectly(){
         var result = builderUser();
-        assertNotNull(result.getId());
-        assertNotNull(result.getName());
-        assertNotNull(result.getEmail());
-        assertNotNull(result.getPassword());
-        assertNotNull(result.getImageUrl());
-        assertNotNull(result.getRoles());
-        assertNotNull(result.getLevel());
-        assertNotNull(result.getBreakthrough());
-        assertNotNull(result.getFriendships());
+        Assertions.assertNotNull(result.getId());
+        Assertions.assertNotNull(result.getName());
+        Assertions.assertNotNull(result.getEmail());
+        Assertions.assertNotNull(result.getPassword());
+        Assertions.assertNotNull(result.getImageUrl());
+        Assertions.assertNotNull(result.getRoles());
+        Assertions.assertNotNull(result.getLevel());
+        Assertions.assertNotNull(result.getBreakthrough());
+        Assertions.assertNotNull(result.getFriendships());
     }
 }

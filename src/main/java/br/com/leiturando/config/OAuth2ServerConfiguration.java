@@ -1,6 +1,6 @@
 package br.com.leiturando.config;
+
 import br.com.leiturando.service.MyUserDetailsService;
-import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -23,9 +23,8 @@ import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.InMemoryTokenStore;
 
 @Configuration
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class OAuth2ServerConfiguration {
-
     private static final String RESOURCE_ID = "restservice";
 
     @Configuration

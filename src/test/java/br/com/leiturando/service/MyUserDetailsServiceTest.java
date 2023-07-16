@@ -1,29 +1,28 @@
 package br.com.leiturando.service;
 
-
 import br.com.leiturando.entity.Role;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
 import br.com.leiturando.repository.UserRepository;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.mockito.Mockito.*;
 
-@RunWith(SpringRunner.class)
-public class MyUserDetailsServiceTest {
+@ExtendWith(MockitoExtension.class)
+class MyUserDetailsServiceTest {
 
     @InjectMocks
     MyUserDetailsService myUserDetailsService;
@@ -39,7 +38,7 @@ public class MyUserDetailsServiceTest {
     Role role;
     List<Role> roles;
 
-    @Before
+    @BeforeEach
     public void init() {
         email = "gustavo@gmail.com";
         role = Role.builder().id(1L).name("a").build();
@@ -48,22 +47,24 @@ public class MyUserDetailsServiceTest {
         userDetails = new UserRepositoryUserDetails(user);
     }
 
-    @Test(expected = UsernameNotFoundException.class)
-    public void setMyUserDetailsServiceException() {
-        myUserDetailsService.loadUserByUsername("joão@gmail.com");
-    }
-
     @Test
-    public void setMyUserDetailsService() {
-        when(userRepository.findByEmail(email))
+    void setMyUserDetailsService() {
+        Mockito.when(userRepository.findByEmail(email))
                 .thenReturn(user);
 
         var result = myUserDetailsService.loadUserByUsername(email);
 
-        assertEquals(result.getUsername(), user.getEmail());
-        assertEquals(result.getAuthorities(), user.getRoles());
-        assertEquals(result.getPassword(), user.getPassword());
-        assertNotNull(role.getAuthority());
+        Assertions.assertEquals(result.getUsername(), user.getEmail());
+        Assertions.assertEquals(result.getAuthorities(), user.getRoles());
+        Assertions.assertEquals(result.getPassword(), user.getPassword());
+        Assertions.assertNotNull(role.getAuthority());
     }
 
+    @Test
+    void setMyUserDetailsServiceException() {
+        UsernameNotFoundException exception = Assertions.assertThrows(UsernameNotFoundException.class,
+                () -> myUserDetailsService.loadUserByUsername("joão@gmail.com"));
+
+        Assertions.assertEquals("Usuário não existe!", exception.getLocalizedMessage());
+    }
 }

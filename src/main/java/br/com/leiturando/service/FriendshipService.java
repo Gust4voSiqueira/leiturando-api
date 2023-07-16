@@ -23,7 +23,7 @@ public class FriendshipService {
     public List<UserResponse> listFriendship(User user) {
         List<Friendship> friendshipMyUser = friendshipRepository.findAllByUserOrFriend(user);
 
-        return friendshipMyUser
+        var teste = friendshipMyUser
                 .stream()
                 .map(friendship -> {
                     if(friendship.getUser() != user) {
@@ -32,7 +32,9 @@ public class FriendshipService {
 
                     return friendship.getFriend();
                 })
-                .filter(friendshipUser -> friendshipUser != user)
+                .filter(friendshipUser -> friendshipUser != user).collect(Collectors.toList());
+
+        return teste.stream()
                 .map(friendship -> userMapper.userToResponse(friendship))
                 .collect(Collectors.toList());
     }

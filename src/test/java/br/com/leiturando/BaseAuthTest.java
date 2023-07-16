@@ -2,16 +2,14 @@ package br.com.leiturando;
 
 import br.com.leiturando.entity.UserTest;
 import br.com.leiturando.service.UserRepositoryUserDetails;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.test.context.junit4.SpringRunner;
 
-@RunWith(SpringRunner.class)
+@SuppressWarnings("squid:S5786")
 public class BaseAuthTest {
     protected UserRepositoryUserDetails userAuth;
 
@@ -28,7 +26,7 @@ public class BaseAuthTest {
     }
 
     @Test
-    public void baseTest(){
-        Assert.assertNotNull(userAuth);
+    void baseTest(){
+        Assertions.assertNotNull(userAuth);
     }
 }

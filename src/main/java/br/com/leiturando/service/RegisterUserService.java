@@ -63,9 +63,6 @@ public class RegisterUserService {
     }
 
     private User createUser(RegisterUserRequest userRequest, String file) {
-        Role role = new Role(Const.ROLE_CLIENT);
-        roleRepository.save(role);
-
         return registerUserMapper.requestToUser(
                 userRequest,
                 file,

@@ -8,37 +8,33 @@ import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
 import br.com.leiturando.exception.UserExistsException;
 import br.com.leiturando.mapper.RegisterUserMapper;
-import br.com.leiturando.repository.RoleRepository;
 import br.com.leiturando.repository.UserRepository;
 import com.amazonaws.services.ecr.model.ImageNotFoundException;
 import org.bouncycastle.openssl.PasswordException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-public class RegisterUserServiceTest {
+@ExtendWith(MockitoExtension.class)
+class RegisterUserServiceTest {
     @InjectMocks
     RegisterUserService registerUserService;
 
     @Mock
     UserRepository userRepository;
-
-    @Mock
-    RoleRepository roleRepository;
 
     @Mock
     PasswordEncoder passwordEncoder;
@@ -56,8 +52,8 @@ public class RegisterUserServiceTest {
     MultipartFile file;
     Role role;
 
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         user = UserTest.builderUser();
         users = Collections.singletonList(user);
         registerUserRequest = RegisterUserRequest
@@ -77,13 +73,12 @@ public class RegisterUserServiceTest {
     }
 
     @Test
-    public void registerUserWithoutFileSuccess() throws Exception {
+    void registerUserWithoutFileSuccess() throws Exception {
         registerUserResponse.setUrlImage("Batman");
         registerUserRequest.setCharacterName("Batman");
 
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(null);
         when(userRepository.save(user)).thenReturn(user);
-        when(roleRepository.save(role)).thenReturn(role);
         when(passwordEncoder.encode(registerUserRequest.getPassword())).thenReturn(registerUserRequest.getPassword());
         when(registerUserMapper.userToRequest(user)).thenReturn(registerUserResponse);
         when(registerUserMapper.requestToUser(
@@ -93,18 +88,17 @@ public class RegisterUserServiceTest {
 
         var result = registerUserService.registerService(registerUserRequest, null);
 
-        assertEquals(registerUserResponse, result);
+        Assertions.assertEquals(registerUserResponse, result);
     }
 
     @Test
-    public void registerUserWithFileSuccess() throws Exception {
+    void registerUserWithFileSuccess() throws Exception {
         registerUserResponse.setUrlImage(file.getName());
 
         String imageName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(null);
         when(userRepository.save(user)).thenReturn(user);
-        when(roleRepository.save(role)).thenReturn(role);
         when(passwordEncoder.encode(registerUserRequest.getPassword())).thenReturn(registerUserRequest.getPassword());
         when(registerUserMapper.userToRequest(user)).thenReturn(registerUserResponse);
         when(fileService.uploadFile(file)).thenReturn(imageName);
@@ -115,29 +109,38 @@ public class RegisterUserServiceTest {
 
         var result = registerUserService.registerService(registerUserRequest, file);
 
-        assertEquals(registerUserResponse, result);
+        Assertions.assertEquals(registerUserResponse, result);
     }
 
-    @Test(expected = UserExistsException.class)
-    public void failedToRegisterUserAlreadyRegistered() throws Exception {
+    @Test
+    void failedToRegisterUserAlreadyRegistered() {
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(user);
 
-        registerUserService.registerService(registerUserRequest, file);
+        UserExistsException exception = Assertions.assertThrows(UserExistsException.class,
+                () -> registerUserService.registerService(registerUserRequest, file));
+
+        Assertions.assertEquals("Já existe um usuário com este e-mail.", exception.getLocalizedMessage());
     }
 
-    @Test(expected = PasswordException.class)
-    public void failedToRegisterUserToPasswordDifferent() throws Exception {
+    @Test
+    void failedToRegisterUserToPasswordDifferent() {
         registerUserRequest.setConfirmPassword("123");
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(null);
 
-        registerUserService.registerService(registerUserRequest, file);
+        PasswordException exception = Assertions.assertThrows(PasswordException.class,
+                () -> registerUserService.registerService(registerUserRequest, file));
+
+        Assertions.assertEquals("As senhas são diferentes.", exception.getLocalizedMessage());
     }
 
-    @Test(expected = ImageNotFoundException.class)
-    public void failedToRegisterUserWithoutFileAndCharacter() throws Exception {
+    @Test
+    void failedToRegisterUserWithoutFileAndCharacter() {
         registerUserRequest.setCharacterName(null);
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(null);
 
-        registerUserService.registerService(registerUserRequest, null);
+        ImageNotFoundException exception = Assertions.assertThrows(ImageNotFoundException.class,
+                () -> registerUserService.registerService(registerUserRequest, null));
+
+        Assertions.assertEquals("Escolha uma imagem para o perfil.", exception.getErrorMessage());
     }
 }

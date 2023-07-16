@@ -1,13 +1,10 @@
 package br.com.leiturando.controller.request;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import static br.com.leiturando.Consts.PASSWORD_DEFAULT;
 
-@RunWith(SpringRunner.class)
 public class RegisterUserRequestTest {
     public static RegisterUserRequest builderUserRequest() {
         return RegisterUserRequest
@@ -21,14 +18,14 @@ public class RegisterUserRequestTest {
     }
 
     @Test
-    public void buildRegisterUserCorrectly() {
+    void buildRegisterUserCorrectly() {
         var user = builderUserRequest();
 
-        Assert.assertNotNull(user.getCharacterName());
-        Assert.assertNotNull(user.getName());
-        Assert.assertNotNull(user.getEmail());
-        Assert.assertNotNull(user.getPassword());
-        Assert.assertNotNull(user.getConfirmPassword());
+        Assertions.assertNotNull(user.getCharacterName());
+        Assertions.assertNotNull(user.getName());
+        Assertions.assertNotNull(user.getEmail());
+        Assertions.assertNotNull(user.getPassword());
+        Assertions.assertNotNull(user.getConfirmPassword());
     }
 
 }

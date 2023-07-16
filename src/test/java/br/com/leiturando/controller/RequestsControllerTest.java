@@ -6,22 +6,21 @@ import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
 import br.com.leiturando.service.RequestsService;
 import com.amazonaws.services.kms.model.NotFoundException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 import static br.com.leiturando.Consts.PASSWORD_DEFAULT;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-
-@RunWith(SpringRunner.class)
-public class RequestsControllerTest extends BaseAuthTest {
+@ExtendWith(MockitoExtension.class)
+class RequestsControllerTest extends BaseAuthTest {
     @InjectMocks
     RequestsController requestsController;
 
@@ -34,7 +33,7 @@ public class RequestsControllerTest extends BaseAuthTest {
     User user;
     User user2;
 
-    @Before
+    @BeforeEach
     public void init() {
         user = UserTest.builderUser();
         user2 = User
@@ -54,27 +53,35 @@ public class RequestsControllerTest extends BaseAuthTest {
     }
 
     @Test
-    public void sendRequestCorrectly() throws Exception {
+    void sendRequestCorrectly() throws Exception {
         when(requestsService.sendRequest(user.getEmail(), user2.getId())).thenReturn(sendRequestResponse);
 
         var result = requestsController.sendRequest(2L);
 
-        assertEquals(sendRequestResponse, result);
+        Assertions.assertEquals(sendRequestResponse, result);
     }
 
-    @Test(expected = RuntimeException.class)
-    public void failedToSendRequestForMyUser() throws Exception {
+    @Test
+    void failedToSendRequestForMyUser() {
         when(requestsService.sendRequest(user.getEmail(), user.getId()))
                 .thenThrow(new RuntimeException("Você não pode enviar uma solicitação para si mesmo."));
 
-        requestsController.sendRequest(user.getId());
+        var id = user.getId();
+
+        Exception exception = Assertions.assertThrows(RuntimeException.class,
+                () -> requestsController.sendRequest(id));
+
+        Assertions.assertNotNull(exception.getMessage());
     }
 
-    @Test(expected = NotFoundException.class)
-    public void failedForNotFoundUser() throws Exception {
+    @Test
+    void failedForNotFoundUser() {
         when(requestsService.sendRequest(user.getEmail(), 3L))
                 .thenThrow(new NotFoundException("Usuário não encontrado."));
 
-        requestsController.sendRequest(3L);
+        Exception exception = Assertions.assertThrows(NotFoundException.class,
+                () -> requestsController.sendRequest(3L));
+
+        Assertions.assertNotNull(exception.getMessage());
     }
 }

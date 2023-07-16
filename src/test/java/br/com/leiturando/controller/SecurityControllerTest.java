@@ -1,17 +1,21 @@
 package br.com.leiturando.controller;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@RunWith(SpringRunner.class)
-public class SecurityControllerTest {
+@ExtendWith(MockitoExtension.class)
+class SecurityControllerTest {
     @InjectMocks
     SecurityController securityController;
 
-    @Test(expected = NullPointerException.class)
-    public void failedToAccessMyUserWithoutToken() {
-        securityController.user();
+    @Test
+    void failedToAccessMyUserWithoutToken() {
+        NullPointerException exception = Assertions.assertThrows(NullPointerException.class,
+                () -> securityController.user());
+
+        Assertions.assertEquals("Você precisa de um token para acessar.", exception.getMessage());
     }
 }

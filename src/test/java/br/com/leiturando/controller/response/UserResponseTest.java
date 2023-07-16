@@ -1,11 +1,8 @@
 package br.com.leiturando.controller.response;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-@RunWith(SpringRunner.class)
 public class UserResponseTest {
     public static UserResponse builderUserResponse() {
         return UserResponse
@@ -17,11 +14,11 @@ public class UserResponseTest {
     }
 
     @Test
-    public void builderUserResponseCorrectly() {
+    void builderUserResponseCorrectly() {
         var userResponse = builderUserResponse();
 
-        Assert.assertNotNull(userResponse.getId());
-        Assert.assertNotNull(userResponse.getUrlImage());
-        Assert.assertNotNull(userResponse.getName());
+        Assertions.assertNotNull(userResponse.getId());
+        Assertions.assertNotNull(userResponse.getUrlImage());
+        Assertions.assertNotNull(userResponse.getName());
     }
 }

@@ -11,22 +11,22 @@ import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.UserRepository;
 import com.amazonaws.services.kms.model.NotFoundException;
 import org.hibernate.procedure.ParameterStrategyException;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 import java.util.Optional;
 
 import static br.com.leiturando.Consts.PASSWORD_DEFAULT;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
 
-@RunWith(SpringRunner.class)
-public class RequestsServiceTest {
+@ExtendWith(MockitoExtension.class)
+class RequestsServiceTest {
     @InjectMocks
     RequestsService requestsService;
 
@@ -49,8 +49,9 @@ public class RequestsServiceTest {
     SendRequestResponse sendRequestResponse;
 
     List<Friendship> friendships;
+    String email;
 
-    @Before
+    @BeforeEach
     public void init() {
         user = UserTest.builderUser();
         user2 = User.builder()
@@ -97,39 +98,49 @@ public class RequestsServiceTest {
                 .requestedId(user.getId())
                 .requesterId(user2.getId())
                 .build();
+        email = user.getEmail();
     }
 
     @Test
-    public void sendRequestCorrectly() {
+    void sendRequestCorrectly() {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
         when(userRepository.findById(user2.getId())).thenReturn(Optional.ofNullable(user2));
         when(sendRequestMapper.createRequest(user, user2)).thenReturn(friendRequests);
         when(sendRequestMapper.requestToResponse(friendRequests)).thenReturn(sendRequestResponse);
 
-        var result = requestsService.sendRequest(user.getEmail(), user2.getId());
+        var result = requestsService.sendRequest(email, user2.getId());
         var expected = sendRequestResponse;
 
-        assertEquals(expected, result);
-    }
-
-    @Test(expected = ParameterStrategyException.class)
-    public void failedToSendRequestToYourUser() {
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
-        when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
-
-        requestsService.sendRequest(user.getEmail(), user.getId());
-    }
-
-    @Test(expected = NotFoundException.class)
-    public void failedToSendRequestToUserNotExists() {
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
-        when(userRepository.findById(5L)).thenReturn(Optional.empty());
-
-        requestsService.sendRequest(user.getEmail(), 5L);
+        Assertions.assertEquals(expected, result);
     }
 
     @Test
-    public void searchRequestsCorrectly() {
+    void failedToSendRequestToYourUser() {
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
+        when(userRepository.findById(user.getId())).thenReturn(Optional.ofNullable(user));
+
+        Long id = user.getId();
+
+        ParameterStrategyException exception = Assertions.assertThrows(ParameterStrategyException.class,
+                () -> requestsService.sendRequest(email, id));
+
+        Assertions.assertEquals("Você não pode enviar uma solicitação para si mesmo.", exception.getLocalizedMessage());
+    }
+
+    @Test
+    void failedToSendRequestToUserNotExists() {
+        when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
+        when(userRepository.findById(5L)).thenReturn(Optional.empty());
+
+
+        NotFoundException exception = Assertions.assertThrows(NotFoundException.class,
+                () -> requestsService.sendRequest(email, 5L));
+
+        Assertions.assertEquals("Usuário não encontrado.", exception.getErrorMessage());
+    }
+
+    @Test
+    void searchRequestsCorrectly() {
         when(friendRequestRepository.findAllByRequestedId(user.getId())).thenReturn(List.of(friendRequests));
         when(userRepository.findById(user2.getId())).thenReturn(Optional.ofNullable(user2));
         when(sendRequestMapper.myUserResponse(user2, 0)).thenReturn(listRequestsResponse);
@@ -137,21 +148,21 @@ public class RequestsServiceTest {
         var result = requestsService.searchRequests(user);
         var expected = List.of(listRequestsResponse);
 
-        assertEquals(expected, result);
+        Assertions.assertEquals(expected, result);
     }
 
     @Test
-    public void searchRequestsCorrectlyInUserWithoutPrompts() {
+    void searchRequestsCorrectlyInUserWithoutPrompts() {
         when(friendRequestRepository.findAllByRequestedId(user.getId())).thenReturn(List.of());
 
         var result = requestsService.searchRequests(user);
         var expected = List.of();
 
-        assertEquals(expected, result);
+        Assertions.assertEquals(expected, result);
     }
 
     @Test
-    public void searchMutualFriendsCorrectly() {
+    void searchMutualFriendsCorrectly() {
         user.setFriendships(List.of(
                 new Friendship(1L, user, user2),
                 new Friendship(2L, user, user3),
@@ -165,7 +176,7 @@ public class RequestsServiceTest {
 
         Integer expected = 2;
 
-        assertEquals(expected, result);
-        assertEquals(expected, result2);
+        Assertions.assertEquals(expected, result);
+        Assertions.assertEquals(expected, result2);
     }
 }

@@ -1,11 +1,8 @@
 package br.com.leiturando.controller.response;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-@RunWith(SpringRunner.class)
 public class ListRequestsResponseTest {
     public static ListRequestsResponse builderListRequestsResponse() {
         return ListRequestsResponse
@@ -18,12 +15,12 @@ public class ListRequestsResponseTest {
     }
 
     @Test
-    public void buildListRequestsResponseCorrectly() {
+    void buildListRequestsResponseCorrectly() {
         var listRequestsResponse = builderListRequestsResponse();
 
-        Assert.assertNotNull(listRequestsResponse.getId());
-        Assert.assertNotNull(listRequestsResponse.getName());
-        Assert.assertNotNull(listRequestsResponse.getUrlImage());
-        Assert.assertNotNull(listRequestsResponse.getMutualFriends());
+        Assertions.assertNotNull(listRequestsResponse.getId());
+        Assertions.assertNotNull(listRequestsResponse.getName());
+        Assertions.assertNotNull(listRequestsResponse.getUrlImage());
+        Assertions.assertNotNull(listRequestsResponse.getMutualFriends());
     }
 }
