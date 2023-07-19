@@ -5,14 +5,19 @@ import br.com.leiturando.controller.response.RegisterUserResponse;
 import br.com.leiturando.domain.Const;
 import br.com.leiturando.entity.Role;
 import br.com.leiturando.entity.User;
+import br.com.leiturando.repository.RoleRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
 public class RegisterUserMapper {
+    @Autowired
+    RoleRepository roleRepository;
+
     public User requestToUser(RegisterUserRequest userRequest, String urlImage, String password) {
-        Role role = new Role(Const.ROLE_CLIENT);
+        Role role = roleRepository.findByName(Const.ROLE_CLIENT);
         return new User(
                 userRequest.getName(),
                 userRequest.getEmail(),

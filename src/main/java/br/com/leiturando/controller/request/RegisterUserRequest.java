@@ -1,6 +1,7 @@
 package br.com.leiturando.controller.request;
 
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
@@ -13,4 +14,5 @@ public class RegisterUserRequest {
     private String email;
     private String password;
     private String confirmPassword;
+    private MultipartFile file;
 }

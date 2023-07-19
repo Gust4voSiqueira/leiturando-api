@@ -31,6 +31,5 @@ public class SecurityController {
         } catch (NullPointerException e) {
             throw new NullPointerException("Você precisa de um token para acessar.");
         }
-
     }
 }

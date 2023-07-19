@@ -2,6 +2,9 @@ package br.com.leiturando.service;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
+import com.amazonaws.util.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,6 +14,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.FileSystemException;
+import java.util.Base64;
 import java.util.Objects;
 
 @Service
@@ -29,6 +33,23 @@ public class FileService {
         s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
 
         return fileName;
+    }
+
+    public String downloadFile(String fileName) {
+        S3Object s3Object = s3Client.getObject(bucketName, fileName);
+        S3ObjectInputStream inputStream = s3Object.getObjectContent();
+        try {
+            byte[] imageByte = IOUtils.toByteArray(inputStream);
+
+            return byteToBase64(imageByte);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static String byteToBase64(byte[] imageData) {
+        return Base64.getEncoder().encodeToString(imageData);
     }
 
     private File convertMultiPartFileToFile(MultipartFile file) throws FileSystemException {

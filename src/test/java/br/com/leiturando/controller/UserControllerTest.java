@@ -5,8 +5,14 @@ import br.com.leiturando.controller.request.RegisterUserRequest;
 import br.com.leiturando.controller.response.RegisterUserResponse;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
+import br.com.leiturando.exception.UserExistsException;
 import br.com.leiturando.service.RegisterUserService;
+import com.amazonaws.services.ecr.model.ImageNotFoundException;
+import com.amazonaws.services.pinpoint.model.BadRequestException;
+import com.amazonaws.services.pinpoint.model.InternalServerErrorException;
+import org.bouncycastle.openssl.PasswordException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,7 +20,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
@@ -38,7 +43,7 @@ class UserControllerTest extends BaseAuthTest {
     RegisterUserResponse registerUserWithoutCharacterResponse;
     MultipartFile file;
 
-    @BeforeTestClass
+    @BeforeEach
     void init() {
         user = UserTest.builderUser();
         users = Collections.singletonList(user);
@@ -75,10 +80,10 @@ class UserControllerTest extends BaseAuthTest {
 
     @Test
     void registerUserWithoutFileSuccess() throws Exception {
-        when(registerUserService.registerService(userRequestBatman, null))
+        when(registerUserService.registerService(userRequestBatman))
                 .thenReturn(registerUserBatmanResponse);
 
-        var result = userController.registerUser(userRequestBatman, null);
+        var result = userController.registerUser(userRequestBatman);
         var expectedResult = registerUserBatmanResponse;
 
         Assertions.assertEquals(result, expectedResult);
@@ -86,60 +91,79 @@ class UserControllerTest extends BaseAuthTest {
 
     @Test
     void registerUserWithFileSuccess() throws Exception {
-        when(registerUserService.registerService(userRequestWithoutCharacter, file))
+        userRequestWithoutCharacter.setFile(file);
+        when(registerUserService.registerService(userRequestWithoutCharacter))
                 .thenReturn(registerUserWithoutCharacterResponse);
 
-        var result = userController.registerUser(userRequestWithoutCharacter, file);
+        var result = userController.registerUser(userRequestWithoutCharacter);
         var expectedResult = registerUserWithoutCharacterResponse;
 
         Assertions.assertEquals(result, expectedResult);
     }
 
-//    @Test
-//    public void failedToRegisterUserWithoutFileAndCharacterName() throws Exception {
-//        RegisterUserRequest registerUserRequest = RegisterUserRequest
-//                .builder()
-//                .characterName(user.getName())
-//                .email(user.getEmail())
-//                .password(user.getPassword())
-//                .confirmPassword(user.getPassword())
-//                .build();
-//
-//        when(registerUserService.registerService(registerUserRequest, null))
-//                .thenThrow(new ImageNotFoundException("Escolha uma imagem para o perfil."));
-//
-//        registerUserService.registerService(registerUserRequest, null);
-//    }
-//
-//    @Test
-//    public void failedToRegisterUserDuplicateEmail() throws Exception {
-//        RegisterUserRequest registerUserRequest = RegisterUserRequest
-//                .builder()
-//                .characterName(user.getName())
-//                .email(user.getEmail())
-//                .password(user.getPassword())
-//                .confirmPassword(user.getPassword())
-//                .build();
-//
-//        when(registerUserService.registerService(registerUserRequest, null))
-//                .thenThrow(new UserExistsException("Já existe um usuário com este e-mail."));
-//
-//        registerUserService.registerService(registerUserRequest, null);
-//    }
-//
-//    @Test
-//    public void failedToRegisterUserDifferencePasswords() throws Exception {
-//        RegisterUserRequest registerUserRequest = RegisterUserRequest
-//                .builder()
-//                .characterName(user.getName())
-//                .email(user.getEmail())
-//                .password(user.getPassword())
-//                .confirmPassword("123")
-//                .build();
-//
-//        when(registerUserService.registerService(registerUserRequest, null))
-//                .thenThrow(new PasswordException("As senhas são diferentes."));
-//
-//        registerUserService.registerService(registerUserRequest, null);
-//    }
+    @Test
+    void failedToRegisterUserWithoutFileAndCharacterName() throws Exception {
+        userRequestWithoutCharacter.setFile(null);
+        userRequestWithoutCharacter.setCharacterName(null);
+
+        RegisterUserRequest registerUserRequest = RegisterUserRequest
+                .builder()
+                .characterName(user.getName())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .confirmPassword(user.getPassword())
+                .build();
+
+        when(registerUserService.registerService(registerUserRequest))
+                .thenThrow(new ImageNotFoundException("Escolha uma imagem para o perfil."));
+
+        Exception exception = Assertions.assertThrows(BadRequestException.class,
+                () -> userController.registerUser(registerUserRequest));
+
+        Assertions.assertNotNull(exception.getLocalizedMessage());
+    }
+
+    @Test
+    void failedToRegisterUserDuplicateEmail() throws Exception {
+        userRequestWithoutCharacter.setFile(null);
+        userRequestWithoutCharacter.setCharacterName(null);
+
+        RegisterUserRequest registerUserRequest = RegisterUserRequest
+                .builder()
+                .characterName(user.getName())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .confirmPassword(user.getPassword())
+                .build();
+
+        when(registerUserService.registerService(registerUserRequest))
+                .thenThrow(new UserExistsException("Já existe um usuário com este e-mail."));
+
+        Exception exception = Assertions.assertThrows(BadRequestException.class,
+                () -> userController.registerUser(registerUserRequest));
+
+        Assertions.assertNotNull(exception.getMessage());
+    }
+
+    @Test
+    void failedToRegisterUserDifferencePasswords() throws Exception {
+        userRequestWithoutCharacter.setFile(null);
+        userRequestWithoutCharacter.setCharacterName(null);
+
+        RegisterUserRequest registerUserRequest = RegisterUserRequest
+                .builder()
+                .characterName(user.getName())
+                .email(user.getEmail())
+                .password(user.getPassword())
+                .confirmPassword("123")
+                .build();
+
+        when(registerUserService.registerService(registerUserRequest))
+                .thenThrow(new PasswordException("As senhas são diferentes."));
+
+        Exception exception = Assertions.assertThrows(InternalServerErrorException.class,
+                () -> userController.registerUser(registerUserRequest));
+
+        Assertions.assertNotNull(exception.getMessage());
+    }
 }

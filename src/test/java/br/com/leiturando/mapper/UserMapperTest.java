@@ -1,6 +1,5 @@
 package br.com.leiturando.mapper;
 
-
 import br.com.leiturando.controller.response.RecommendedFriendsResponse;
 import br.com.leiturando.controller.response.UserResponse;
 import br.com.leiturando.entity.User;
@@ -41,7 +40,7 @@ class UserMapperTest {
 
     @Test
     void setUserToRecommendedFriend() {
-        RecommendedFriendsResponse result = userMapper.userToRecommendedFriend(user, 1);
+        RecommendedFriendsResponse result = userMapper.userToRecommendedFriend(user, user.getImageUrl(), 1);
         RecommendedFriendsResponse expected = RecommendedFriendsResponse
                 .builder()
                     .id(user.getId())

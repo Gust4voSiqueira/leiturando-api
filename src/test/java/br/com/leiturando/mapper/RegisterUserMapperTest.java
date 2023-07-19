@@ -6,22 +6,30 @@ import br.com.leiturando.domain.Const;
 import br.com.leiturando.entity.Role;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
+import br.com.leiturando.repository.RoleRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class RegisterUserMapperTest {
     @InjectMocks
     RegisterUserMapper registerUserMapper;
 
+    @Mock
+    RoleRepository roleRepository;
+
     RegisterUserRequest registerUserRequest;
     User user;
+    Role role;
 
     @BeforeEach
     public void init() {
@@ -34,11 +42,14 @@ class RegisterUserMapperTest {
                     .password(user.getPassword())
                     .confirmPassword(user.getPassword())
                 .build();
+        role = new Role(Const.ROLE_CLIENT);
     }
 
     @Test
     void setRequestToUser() {
         user = UserTest.builderUser();
+
+        when(roleRepository.findByName(Const.ROLE_CLIENT)).thenReturn(role);
 
         User result = registerUserMapper.requestToUser(registerUserRequest, registerUserRequest.getCharacterName(), registerUserRequest.getPassword());
         User expected = User

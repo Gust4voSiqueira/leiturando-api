@@ -20,11 +20,12 @@ import static br.com.leiturando.Consts.PASSWORD_DEFAULT;
 @ExtendWith(MockitoExtension.class)
 class SendRequestMapperTest {
     @InjectMocks
-    SendRequestMapper sendRequestMapper;
+    RequestMapper sendRequestMapper;
 
     FriendRequests friendRequests;
     User user1;
     User user2;
+    String image;
 
     @BeforeEach
     public void init() {
@@ -44,6 +45,8 @@ class SendRequestMapperTest {
                     .requester(user1)
                     .requested(user2)
                 .build();
+
+        image = "image";
     }
 
     @Test
@@ -62,11 +65,6 @@ class SendRequestMapperTest {
     @Test
     void setRequestToResponse() {
         SendRequestResponse result = sendRequestMapper.requestToResponse(friendRequests);
-        SendRequestResponse expected = SendRequestResponse
-                .builder()
-                    .requesterId(user1.getId())
-                    .requestedId(user2.getId())
-                .build();
 
         Assertions.assertEquals(user1.getId(), result.getRequesterId());
         Assertions.assertEquals(user2.getId(), result.getRequestedId());
@@ -74,7 +72,7 @@ class SendRequestMapperTest {
 
     @Test
     void setMyUserResponse() {
-        ListRequestsResponse result = sendRequestMapper.myUserResponse(user1, 1);
+        ListRequestsResponse result = sendRequestMapper.myUserResponse(user1, user1.getImageUrl(), 1);
         ListRequestsResponse expected = ListRequestsResponse
                 .builder()
                     .id(user1.getId())

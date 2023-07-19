@@ -1,35 +1,51 @@
 package br.com.leiturando.controller;
 
+import br.com.leiturando.controller.response.RequestResponse;
 import br.com.leiturando.controller.response.ErrorResponse;
 import br.com.leiturando.controller.response.SendRequestResponse;
 import br.com.leiturando.entity.User;
-import br.com.leiturando.service.RequestsService;
+import br.com.leiturando.service.requests.AcceptRequestService;
+import br.com.leiturando.service.requests.RemoveRequestService;
+import br.com.leiturando.service.requests.RequestsService;
+import br.com.leiturando.service.requests.SendRequestsService;
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.amazonaws.services.pinpoint.model.BadRequestException;
 import com.amazonaws.services.pinpoint.model.InternalServerErrorException;
 import org.hibernate.procedure.ParameterStrategyException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/request")
 public class RequestsController {
     @Autowired
+    SendRequestsService sendRequestsService;
+
+    @Autowired
+    AcceptRequestService acceptRequestService;
+
+    @Autowired
     RequestsService requestsService;
 
+    @Autowired
+    RemoveRequestService removeRequestService;
+
+    @GetMapping("/getRequests")
+    public RequestResponse getRequests() {
+        User user = (User) SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getPrincipal();
+        return requestsService.getRequests(user.getEmail());
+    }
+
     @PostMapping("/send/{requestedId}")
-    public SendRequestResponse sendRequest(@PathVariable Long requestedId) throws Exception {
+    public SendRequestResponse sendRequest(@PathVariable Long requestedId) {
         try {
             User user = (User) SecurityContextHolder.getContext()
                     .getAuthentication()
                     .getPrincipal();
-            return requestsService.sendRequest(user.getEmail(), requestedId);
+            return sendRequestsService.sendRequest(user.getEmail(), requestedId);
         } catch (NotFoundException e) {
             ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
             throw new NotFoundException(errorResponse.getMessage());
@@ -41,4 +57,31 @@ public class RequestsController {
             throw new InternalServerErrorException(errorResponse.getMessage());
         }
     }
+
+    @PostMapping("/accept/{requesterId}")
+    public RequestResponse acceptRequest(@PathVariable Long requesterId) {
+        try {
+            User user = (User) SecurityContextHolder.getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+            return acceptRequestService.acceptRequest(user.getEmail(), requesterId);
+        } catch (NotFoundException e) {
+            ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
+            throw new NotFoundException(errorResponse.getMessage());
+        }
+    }
+
+    @DeleteMapping("/remove/{requesterId}")
+    public RequestResponse removeRequest(@PathVariable Long requesterId) {
+        try {
+            User user = (User) SecurityContextHolder.getContext()
+                    .getAuthentication()
+                    .getPrincipal();
+            return removeRequestService.removeRequest(user.getEmail(), requesterId);
+        } catch (NotFoundException e) {
+            ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
+            throw new NotFoundException(errorResponse.getMessage());
+        }
+    }
+
 }

@@ -6,7 +6,6 @@ import br.com.leiturando.controller.response.RecommendedFriendsResponse;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
 import br.com.leiturando.mapper.MyUserMapper;
-import br.com.leiturando.mapper.UserMapper;
 import br.com.leiturando.repository.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,8 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -32,16 +29,10 @@ class MyUserServiceTest {
     MyUserMapper myUserMapper;
 
     @Mock
-    UserMapper userMapper;
-
-    @Mock
     UserRepository userRepository;
 
     @Mock
-    RequestsService requestsService;
-
-    @Mock
-    FriendshipService friendshipService;
+    FileService fileService;
 
     User user;
     User user2;
@@ -60,7 +51,7 @@ class MyUserServiceTest {
                 .name("Brena")
                 .email("brena@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Batman")
+                .imageUrl("batman")
                 .friendships(List.of())
                 .build();
         user3 = User.builder()
@@ -68,7 +59,7 @@ class MyUserServiceTest {
                 .name("Marcelo")
                 .email("marcelo@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Harry")
+                .imageUrl("harry")
                 .friendships(List.of())
                 .build();
         recommendedFriendsResponse1 = RecommendedFriendsResponse
@@ -89,7 +80,7 @@ class MyUserServiceTest {
                 .builder()
                 .id(4L)
                 .name("Rogério")
-                .urlImage("Flash")
+                .urlImage("thor")
                 .mutualFriends(1)
                 .build();
         requestsOfMyUser = List.of(requestsResponse);
@@ -99,32 +90,17 @@ class MyUserServiceTest {
                 .name(user.getName())
                 .level(user.getLevel())
                 .breakthrough(user.getBreakthrough())
-                .friends(List.of())
-                .requests(List.of(requestsResponse))
-                .usersRecomended(List.of(recommendedFriendsResponse1, recommendedFriendsResponse2))
                 .build();
     }
 
     @Test
     void myUserServiceTest() {
-        PageRequest firstPageWithTwoElements = PageRequest.of(0, 10);
-
         when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
-        when(requestsService.searchRequests(user)).thenReturn(requestsOfMyUser);
-        when(friendshipService.listFriendship(user)).thenReturn(List.of());
-        when(userRepository.findAll(firstPageWithTwoElements)).thenReturn(new PageImpl<>(List.of(user2, user3)));
-
-        when(requestsService.searchMutualFriends(user, user2)).thenReturn(1);
-        when(requestsService.searchMutualFriends(user, user3)).thenReturn(1);
-        when(userMapper.userToRecommendedFriend(user2, 1)).thenReturn(recommendedFriendsResponse1);
-        when(userMapper.userToRecommendedFriend(user3, 1)).thenReturn(recommendedFriendsResponse2);
-        when(myUserMapper.myUserDtoToResponse(user, List.of(), requestsOfMyUser, List.of(recommendedFriendsResponse1, recommendedFriendsResponse2))).thenReturn(myUserResponse);
+        when(myUserMapper.myUserDtoToResponse(user, user.getImageUrl())).thenReturn(myUserResponse);
+        when(fileService.downloadFile(user.getImageUrl())).thenReturn(user.getImageUrl());
 
         var result = myUserService.myUserService(user.getEmail());
 
         Assertions.assertEquals(myUserResponse.getName(), result.getName());
-        Assertions.assertEquals(myUserResponse.getRequests(), result.getRequests());
-        Assertions.assertEquals(myUserResponse.getUsersRecomended(), result.getUsersRecomended());
-        Assertions.assertEquals(myUserResponse.getFriends(), result.getFriends());
     }
 }

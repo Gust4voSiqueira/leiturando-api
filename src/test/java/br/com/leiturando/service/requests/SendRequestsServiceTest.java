@@ -1,4 +1,4 @@
-package br.com.leiturando.service;
+package br.com.leiturando.service.requests;
 
 import br.com.leiturando.controller.response.ListRequestsResponse;
 import br.com.leiturando.controller.response.SendRequestResponse;
@@ -6,9 +6,10 @@ import br.com.leiturando.entity.FriendRequests;
 import br.com.leiturando.entity.Friendship;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
-import br.com.leiturando.mapper.SendRequestMapper;
+import br.com.leiturando.mapper.RequestMapper;
 import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.UserRepository;
+import br.com.leiturando.service.FileService;
 import com.amazonaws.services.kms.model.NotFoundException;
 import org.hibernate.procedure.ParameterStrategyException;
 import org.junit.jupiter.api.Assertions;
@@ -26,9 +27,9 @@ import static br.com.leiturando.Consts.PASSWORD_DEFAULT;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class RequestsServiceTest {
+class SendRequestsServiceTest {
     @InjectMocks
-    RequestsService requestsService;
+    SendRequestsService requestsService;
 
     @Mock
     FriendRequestRepository friendRequestRepository;
@@ -37,19 +38,22 @@ class RequestsServiceTest {
     UserRepository userRepository;
 
     @Mock
-    SendRequestMapper sendRequestMapper;
+    RequestMapper sendRequestMapper;
+    @Mock
+    FileService fileService;
 
     User user;
 
     User user2;
     User user3;
     User user4;
+    String email;
+    String image;
     FriendRequests friendRequests;
     ListRequestsResponse listRequestsResponse;
     SendRequestResponse sendRequestResponse;
 
     List<Friendship> friendships;
-    String email;
 
     @BeforeEach
     public void init() {
@@ -99,6 +103,7 @@ class RequestsServiceTest {
                 .requesterId(user2.getId())
                 .build();
         email = user.getEmail();
+        image = "image";
     }
 
     @Test
@@ -143,9 +148,10 @@ class RequestsServiceTest {
     void searchRequestsCorrectly() {
         when(friendRequestRepository.findAllByRequestedId(user.getId())).thenReturn(List.of(friendRequests));
         when(userRepository.findById(user2.getId())).thenReturn(Optional.ofNullable(user2));
-        when(sendRequestMapper.myUserResponse(user2, 0)).thenReturn(listRequestsResponse);
+        when(sendRequestMapper.myUserResponse(user2, user2.getImageUrl(), 0)).thenReturn(listRequestsResponse);
+        when(fileService.downloadFile(user2.getImageUrl())).thenReturn(user.getImageUrl());
 
-        var result = requestsService.searchRequests(user);
+        var result = requestsService.searchRequestsReceived(user);
         var expected = List.of(listRequestsResponse);
 
         Assertions.assertEquals(expected, result);
@@ -155,7 +161,7 @@ class RequestsServiceTest {
     void searchRequestsCorrectlyInUserWithoutPrompts() {
         when(friendRequestRepository.findAllByRequestedId(user.getId())).thenReturn(List.of());
 
-        var result = requestsService.searchRequests(user);
+        var result = requestsService.searchRequestsReceived(user);
         var expected = List.of();
 
         Assertions.assertEquals(expected, result);

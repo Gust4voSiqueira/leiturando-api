@@ -9,8 +9,7 @@ import com.amazonaws.services.ecr.model.ImageNotFoundException;
 import com.amazonaws.services.pinpoint.model.BadRequestException;
 import com.amazonaws.services.pinpoint.model.InternalServerErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,9 +21,9 @@ public class UserController {
     RegisterUserService registerUserService;
 
     @PostMapping("/register")
-    public RegisterUserResponse registerUser(@RequestBody RegisterUserRequest userRequest, @RequestParam(value = "file", required = false) MultipartFile file) {
+    public RegisterUserResponse registerUser(@ModelAttribute RegisterUserRequest userRequest) {
         try {
-            return registerUserService.registerService(userRequest, file);
+            return registerUserService.registerService(userRequest);
         } catch (UserExistsException | ImageNotFoundException e) {
             ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
             throw new BadRequestException(errorResponse.getMessage());

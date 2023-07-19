@@ -35,33 +35,40 @@ public class DataInitializr implements ApplicationListener<ContextRefreshedEvent
         final String usersDefault = "123456";
         List<Friendship> friendshipList = friendshipRepository.findAll();
 
-        createUser("Gustavo", "gustavosiqueira082@gmail.com", passwordEncoder.encode(usersDefault), Const.ROLE_ADMIN);
-        createUser("Brena", "brena@gmail.com", passwordEncoder.encode(usersDefault), Const.ROLE_ADMIN);
-        createUser("Nataniel", "nataniel@gmail.com", passwordEncoder.encode(usersDefault), Const.ROLE_ADMIN);
-        createUser("Matias", "matias@gmail.com", passwordEncoder.encode(usersDefault), Const.ROLE_ADMIN);
-        createUser("Rogerio", "rogerio@gmail.com", passwordEncoder.encode(usersDefault), Const.ROLE_ADMIN);
-        createUser("Felipe", "felipe@gmail.com", passwordEncoder.encode(usersDefault), Const.ROLE_ADMIN);
+        Role roleAdmin = new Role(Const.ROLE_ADMIN);
+        Role roleClient = new Role(Const.ROLE_CLIENT);
+
+        roleRepository.save(roleAdmin);
+        roleRepository.save(roleClient);
+
+        createUser("Gustavo", "gustavosiqueira082@gmail.com", "batman",passwordEncoder.encode(usersDefault), roleAdmin);
+        createUser("Brena", "brena@gmail.com", "wonder",passwordEncoder.encode(usersDefault), roleClient);
+        createUser("Jonas", "jonas@gmail.com", "joker",passwordEncoder.encode(usersDefault), roleClient);
+        createUser("Henrique", "henrique@gmail.com", "superman",passwordEncoder.encode(usersDefault), roleClient);
+        createUser("Natan", "natan@gmail.com", "harry",passwordEncoder.encode(usersDefault), roleClient);
+        createUser("Felipe", "felipe@gmail.com", "thor",passwordEncoder.encode(usersDefault), roleClient);
 
 
         if (friendshipList.isEmpty()) {
             User user1 = userRepository.findByEmail("gustavosiqueira082@gmail.com");
             User user2 = userRepository.findByEmail("brena@gmail.com");
-            User user3 = userRepository.findByEmail("rogerio@gmail.com");
+            User user3 = userRepository.findByEmail("jonas@gmail.com");
+            User user4 = userRepository.findByEmail("henrique@gmail.com");
 
-            Friendship friendship1 = new Friendship(user2, user3);
+            Friendship friendship1 = new Friendship(user1, user2);
             Friendship friendship2 = new Friendship(user1, user3);
+            Friendship friendship3 = new Friendship(user4, user2);
+            Friendship friendship4 = new Friendship(user4, user3);
 
             friendshipRepository.save(friendship1);
             friendshipRepository.save(friendship2);
+            friendshipRepository.save(friendship3);
+            friendshipRepository.save(friendship4);
         }
     }
 
-    public void createUser(String name, String email, String password, String roleName) {
-        Role role = new Role(roleName);
-        String imageUrl = "https://avatars.githubusercontent.com/u/79036409?s=400&u=ce42c584cbef8bfb4d2fd972eca98595feaa67d2&v=4";
-
-        roleRepository.save(role);
-        User user = new User(name, email, imageUrl, 1, 0, password, Arrays.asList(role));
+    public void createUser(String name, String email, String character, String password, Role role) {
+        User user = new User(name, email, character, 1, 0, password, Arrays.asList(role));
         userRepository.save(user);
     }
 

@@ -86,7 +86,7 @@ class RegisterUserServiceTest {
                 registerUserRequest.getCharacterName(),
                 passwordEncoder.encode(registerUserRequest.getPassword()))).thenReturn(user);
 
-        var result = registerUserService.registerService(registerUserRequest, null);
+        var result = registerUserService.registerService(registerUserRequest);
 
         Assertions.assertEquals(registerUserResponse, result);
     }
@@ -94,6 +94,7 @@ class RegisterUserServiceTest {
     @Test
     void registerUserWithFileSuccess() throws Exception {
         registerUserResponse.setUrlImage(file.getName());
+        registerUserRequest.setFile(file);
 
         String imageName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
 
@@ -107,7 +108,7 @@ class RegisterUserServiceTest {
                 imageName,
                 passwordEncoder.encode(registerUserRequest.getPassword()))).thenReturn(user);
 
-        var result = registerUserService.registerService(registerUserRequest, file);
+        var result = registerUserService.registerService(registerUserRequest);
 
         Assertions.assertEquals(registerUserResponse, result);
     }
@@ -115,9 +116,10 @@ class RegisterUserServiceTest {
     @Test
     void failedToRegisterUserAlreadyRegistered() {
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(user);
+        registerUserRequest.setFile(file);
 
         UserExistsException exception = Assertions.assertThrows(UserExistsException.class,
-                () -> registerUserService.registerService(registerUserRequest, file));
+                () -> registerUserService.registerService(registerUserRequest));
 
         Assertions.assertEquals("Já existe um usuário com este e-mail.", exception.getLocalizedMessage());
     }
@@ -126,9 +128,10 @@ class RegisterUserServiceTest {
     void failedToRegisterUserToPasswordDifferent() {
         registerUserRequest.setConfirmPassword("123");
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(null);
+        registerUserRequest.setFile(file);
 
         PasswordException exception = Assertions.assertThrows(PasswordException.class,
-                () -> registerUserService.registerService(registerUserRequest, file));
+                () -> registerUserService.registerService(registerUserRequest));
 
         Assertions.assertEquals("As senhas são diferentes.", exception.getLocalizedMessage());
     }
@@ -136,10 +139,11 @@ class RegisterUserServiceTest {
     @Test
     void failedToRegisterUserWithoutFileAndCharacter() {
         registerUserRequest.setCharacterName(null);
+        registerUserRequest.setFile(null);
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(null);
 
         ImageNotFoundException exception = Assertions.assertThrows(ImageNotFoundException.class,
-                () -> registerUserService.registerService(registerUserRequest, null));
+                () -> registerUserService.registerService(registerUserRequest));
 
         Assertions.assertEquals("Escolha uma imagem para o perfil.", exception.getErrorMessage());
     }

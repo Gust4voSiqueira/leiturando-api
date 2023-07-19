@@ -37,7 +37,7 @@ public class RegisterUserService {
     @Autowired
     FileService fileService;
 
-    public RegisterUserResponse registerService(RegisterUserRequest userRequest, MultipartFile file) throws Exception {
+    public RegisterUserResponse registerService(RegisterUserRequest userRequest) throws Exception {
         User existingUser = userRepository.findByEmail(userRequest.getEmail());
         if (existingUser != null) {
             throw new UserExistsException("Já existe um usuário com este e-mail.");
@@ -48,8 +48,8 @@ public class RegisterUserService {
         }
 
         String imageUser;
-        if(file != null) {
-            imageUser = fileService.uploadFile(file);
+        if(userRequest.getFile() != null) {
+            imageUser = fileService.uploadFile(userRequest.getFile());
         } else if(userRequest.getCharacterName() != null) {
             imageUser = userRequest.getCharacterName();
         } else {
