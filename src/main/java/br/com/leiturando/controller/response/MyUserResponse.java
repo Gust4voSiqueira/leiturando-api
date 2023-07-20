@@ -10,7 +10,7 @@ import lombok.Setter;
 @Builder
 @AllArgsConstructor
 public class MyUserResponse {
-    private String imageUrl;
+    private String urlImage;
     private String name;
     private Integer level;
     private Integer breakthrough;

@@ -10,11 +10,13 @@ import br.com.leiturando.mapper.UserMapper;
 import br.com.leiturando.repository.UserRepository;
 import br.com.leiturando.service.FileService;
 import br.com.leiturando.service.FriendshipService;
+import com.amazonaws.services.pinpoint.model.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -63,15 +65,15 @@ public class RequestsService {
                 .filter(userLocal -> !myFriendshipIds.contains(userLocal.getId()))
                 .filter(userLocal -> !requestsIds.contains(userLocal.getId()))
                 .map(userLocal -> {
-                    String image;
-                    if(CHARACTERS_LIST.contains(userLocal.getImageUrl())) {
-                        image = fileService.downloadFile(userLocal.getImageUrl() + ".png");
-                    } else {
-                        image = fileService.downloadFile(userLocal.getImageUrl());
+                    try {
+                        String image = fileService.downloadFile(userLocal.getImageUrl());
+
+                        return userMapper.userToRecommendedFriend(userLocal, image, sendRequestsService.searchMutualFriends(user, userLocal));
+                    } catch (IOException e) {
+                        throw new BadRequestException(e.getMessage());
                     }
 
-                    return userMapper.userToRecommendedFriend(userLocal, image, sendRequestsService.searchMutualFriends(user, userLocal));
-                })
+                    })
                 .collect(Collectors.toList());
     }
 }

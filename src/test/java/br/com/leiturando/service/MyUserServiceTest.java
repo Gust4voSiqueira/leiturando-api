@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
 import java.util.List;
 
 import static br.com.leiturando.Consts.PASSWORD_DEFAULT;
@@ -86,7 +87,7 @@ class MyUserServiceTest {
         requestsOfMyUser = List.of(requestsResponse);
         myUserResponse = MyUserResponse
                 .builder()
-                .imageUrl(user.getImageUrl())
+                .urlImage(user.getImageUrl())
                 .name(user.getName())
                 .level(user.getLevel())
                 .breakthrough(user.getBreakthrough())
@@ -94,7 +95,7 @@ class MyUserServiceTest {
     }
 
     @Test
-    void myUserServiceTest() {
+    void myUserServiceTest() throws IOException {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
         when(myUserMapper.myUserDtoToResponse(user, user.getImageUrl())).thenReturn(myUserResponse);
         when(fileService.downloadFile(user.getImageUrl())).thenReturn(user.getImageUrl());

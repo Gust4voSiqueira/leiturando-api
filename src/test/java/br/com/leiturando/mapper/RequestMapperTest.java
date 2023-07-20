@@ -1,8 +1,7 @@
 package br.com.leiturando.mapper;
 
 
-import br.com.leiturando.controller.response.ListRequestsResponse;
-import br.com.leiturando.controller.response.SendRequestResponse;
+import br.com.leiturando.controller.response.*;
 import br.com.leiturando.entity.FriendRequests;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
@@ -18,14 +17,16 @@ import java.util.List;
 import static br.com.leiturando.Consts.PASSWORD_DEFAULT;
 
 @ExtendWith(MockitoExtension.class)
-class SendRequestMapperTest {
+class RequestMapperTest {
     @InjectMocks
-    RequestMapper sendRequestMapper;
+    RequestMapper requestMapper;
 
     FriendRequests friendRequests;
     User user1;
     User user2;
-    String image;
+    List<UserResponse> friends;
+    List<ListRequestsResponse> requests;
+    List<RecommendedFriendsResponse> usersRecommended;
 
     @BeforeEach
     public void init() {
@@ -45,13 +46,33 @@ class SendRequestMapperTest {
                     .requester(user1)
                     .requested(user2)
                 .build();
-
-        image = "image";
+        friends = List.of(UserResponse
+                .builder()
+                    .id(user1.getId())
+                    .name(user1.getName())
+                    .urlImage(user1.getImageUrl())
+                .build()
+        );
+        requests = List.of(ListRequestsResponse
+                .builder()
+                    .name(user2.getName())
+                    .urlImage(user2.getImageUrl())
+                    .mutualFriends(1)
+                .build()
+        );
+        usersRecommended = List.of(RecommendedFriendsResponse
+                .builder()
+                        .id(3L)
+                        .urlImage("spiderman")
+                        .name("Fred")
+                        .mutualFriends(1)
+                .build()
+        );
     }
 
     @Test
     void setCreateRequest(){
-        FriendRequests result = sendRequestMapper.createRequest(user1, user2);
+        FriendRequests result = requestMapper.createRequest(user1, user2);
         FriendRequests expected = FriendRequests
                 .builder()
                 .requester(user1)
@@ -64,7 +85,7 @@ class SendRequestMapperTest {
 
     @Test
     void setRequestToResponse() {
-        SendRequestResponse result = sendRequestMapper.requestToResponse(friendRequests);
+        SendRequestResponse result = requestMapper.requestToResponse(friendRequests);
 
         Assertions.assertEquals(user1.getId(), result.getRequesterId());
         Assertions.assertEquals(user2.getId(), result.getRequestedId());
@@ -72,7 +93,7 @@ class SendRequestMapperTest {
 
     @Test
     void setMyUserResponse() {
-        ListRequestsResponse result = sendRequestMapper.myUserResponse(user1, user1.getImageUrl(), 1);
+        ListRequestsResponse result = requestMapper.myUserResponse(user1, user1.getImageUrl(), 1);
         ListRequestsResponse expected = ListRequestsResponse
                 .builder()
                     .id(user1.getId())
@@ -85,5 +106,22 @@ class SendRequestMapperTest {
         Assertions.assertEquals(expected.getName(), result.getName());
         Assertions.assertEquals(expected.getUrlImage(), result.getUrlImage());
         Assertions.assertEquals(expected.getMutualFriends(), result.getMutualFriends());
+    }
+
+    @Test
+    void getRequests() {
+        RequestResponse result = requestMapper.getRequests(friends, requests, List.of(), usersRecommended);
+        RequestResponse expected = RequestResponse
+                .builder()
+                    .friends(friends)
+                    .requests(requests)
+                    .requestsSend(List.of())
+                    .usersRecommended(usersRecommended)
+                .build();
+
+        Assertions.assertEquals(expected.getFriends(), result.getFriends());
+        Assertions.assertEquals(expected.getRequests(), result.getRequests());
+        Assertions.assertEquals(expected.getRequestsSend(), result.getRequestsSend());
+        Assertions.assertEquals(expected.getUsersRecommended(), result.getUsersRecommended());
     }
 }

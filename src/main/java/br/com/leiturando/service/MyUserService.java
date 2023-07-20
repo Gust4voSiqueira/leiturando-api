@@ -7,7 +7,8 @@ import br.com.leiturando.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import static br.com.leiturando.domain.Const.CHARACTERS_LIST;
+import java.io.IOException;
+
 
 @Service
 public class MyUserService {
@@ -20,15 +21,10 @@ public class MyUserService {
     @Autowired
     FileService fileService;
 
-    public MyUserResponse myUserService(String email) {
+    public MyUserResponse myUserService(String email) throws IOException {
         User user = userRepository.findByEmail(email);
 
-        String image;
-        if(CHARACTERS_LIST.contains(user.getImageUrl())) {
-            image = fileService.downloadFile(user.getImageUrl() + ".png");
-        } else {
-            image = fileService.downloadFile(user.getImageUrl());
-        }
+        String image = fileService.downloadFile(user.getImageUrl());
 
         return myUserMapper.myUserDtoToResponse(user, image);
     }

@@ -20,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -145,7 +146,7 @@ class SendRequestsServiceTest {
     }
 
     @Test
-    void searchRequestsCorrectly() {
+    void searchRequestsCorrectly() throws IOException {
         when(friendRequestRepository.findAllByRequestedId(user.getId())).thenReturn(List.of(friendRequests));
         when(userRepository.findById(user2.getId())).thenReturn(Optional.ofNullable(user2));
         when(sendRequestMapper.myUserResponse(user2, user2.getImageUrl(), 0)).thenReturn(listRequestsResponse);

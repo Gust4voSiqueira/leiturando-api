@@ -23,7 +23,7 @@ class MyUserMapperTest {
         MyUserResponse result = myUserMapper.myUserDtoToResponse(user, user.getImageUrl());
         MyUserResponse expected = MyUserResponse
                 .builder()
-                    .imageUrl(user.getImageUrl())
+                .urlImage(user.getImageUrl())
                     .name(user.getName())
                     .level(user.getLevel())
                     .breakthrough(user.getBreakthrough())
@@ -31,7 +31,7 @@ class MyUserMapperTest {
 
 
         Assertions.assertEquals(expected.getName(), result.getName());
-        Assertions.assertEquals(expected.getImageUrl(), result.getImageUrl());
+        Assertions.assertEquals(expected.getUrlImage(), result.getUrlImage());
         Assertions.assertEquals(expected.getLevel(), result.getLevel());
         Assertions.assertEquals(expected.getBreakthrough(), result.getBreakthrough());
     }

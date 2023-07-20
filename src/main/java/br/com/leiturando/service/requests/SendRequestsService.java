@@ -9,16 +9,16 @@ import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.UserRepository;
 import br.com.leiturando.service.FileService;
 import com.amazonaws.services.kms.model.NotFoundException;
+import com.amazonaws.services.pinpoint.model.BadRequestException;
 import org.hibernate.procedure.ParameterStrategyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static br.com.leiturando.domain.Const.CHARACTERS_LIST;
 
 @Service
 public class SendRequestsService {
@@ -63,15 +63,14 @@ public class SendRequestsService {
         List<User> requestsReceivedUsers = requests.stream().map(request -> userRepository.findById(request.getRequester().getId()).get()).collect(Collectors.toList());
 
         return requestsReceivedUsers.stream().map(userLocal -> {
-            String image;
-            if(CHARACTERS_LIST.contains(userLocal.getImageUrl())) {
-                image = fileService.downloadFile(userLocal.getImageUrl() + ".png");
-            } else {
-                image = fileService.downloadFile(userLocal.getImageUrl());
-            }
+            try {
+                String image = fileService.downloadFile(userLocal.getImageUrl());
 
-            return sendRequestMapper.myUserResponse(userLocal, image, searchMutualFriends(user, userLocal));
-        }).collect(Collectors.toList());
+                return sendRequestMapper.myUserResponse(userLocal, image, searchMutualFriends(user, userLocal));
+            } catch (IOException e) {
+                throw new BadRequestException(e.getMessage());
+            }
+            }).collect(Collectors.toList());
     }
 
     public List<ListRequestsResponse> searchRequestsSend(User user) {
@@ -89,15 +88,14 @@ public class SendRequestsService {
         return requestsSendUsers
                 .stream()
                 .map(userLocal -> {
-                    String image;
-                    if(CHARACTERS_LIST.contains(userLocal.getImageUrl())) {
-                        image = fileService.downloadFile(userLocal.getImageUrl() + ".png");
-                    } else {
-                        image = fileService.downloadFile(userLocal.getImageUrl());
-                    }
+                    try {
+                        String image = fileService.downloadFile(userLocal.getImageUrl());
 
-                    return sendRequestMapper.myUserResponse(userLocal, image, searchMutualFriends(user, userLocal));
-                })
+                        return sendRequestMapper.myUserResponse(userLocal, image, searchMutualFriends(user, userLocal));
+                    } catch (IOException e) {
+                        throw new BadRequestException(e.getMessage());
+                    }
+                    })
                 .collect(Collectors.toList());
     }
 

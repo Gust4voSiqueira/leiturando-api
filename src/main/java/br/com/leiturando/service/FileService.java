@@ -17,6 +17,8 @@ import java.nio.file.FileSystemException;
 import java.util.Base64;
 import java.util.Objects;
 
+import static br.com.leiturando.domain.Const.CHARACTERS_LIST;
+
 @Service
 public class FileService {
 
@@ -35,17 +37,23 @@ public class FileService {
         return fileName;
     }
 
-    public String downloadFile(String fileName) {
-        S3Object s3Object = s3Client.getObject(bucketName, fileName);
+    public String downloadFile(String fileName) throws IOException {
+        S3Object s3Object;
+
+        if(CHARACTERS_LIST.contains(fileName)) {
+            s3Object = s3Client.getObject(bucketName, fileName + ".png");
+        } else {
+            s3Object = s3Client.getObject(bucketName, fileName);
+        }
+
         S3ObjectInputStream inputStream = s3Object.getObjectContent();
         try {
             byte[] imageByte = IOUtils.toByteArray(inputStream);
 
             return byteToBase64(imageByte);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new IOException("Falha ao baixar o arquivo");
         }
-        return null;
     }
 
     public static String byteToBase64(byte[] imageData) {

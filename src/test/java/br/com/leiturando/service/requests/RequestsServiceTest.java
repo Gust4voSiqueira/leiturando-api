@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
+import java.io.IOException;
 import java.util.List;
 
 import static br.com.leiturando.Consts.PASSWORD_DEFAULT;
@@ -89,7 +90,7 @@ class RequestsServiceTest {
         requestsOfMyUser = List.of(requestsResponse);
         myUserResponse = MyUserResponse
                 .builder()
-                .imageUrl(user.getImageUrl())
+                .urlImage(user.getImageUrl())
                 .name(user.getName())
                 .level(user.getLevel())
                 .breakthrough(user.getBreakthrough())
@@ -111,7 +112,7 @@ class RequestsServiceTest {
     }
 
     @Test
-    void myUserServiceTest() {
+    void myUserServiceTest() throws IOException {
         PageRequest firstPageWithTwoElements = PageRequest.of(0, 10);
 
         when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
@@ -121,8 +122,7 @@ class RequestsServiceTest {
         when(sendRequestsService.searchMutualFriends(user, user3)).thenReturn(1);
         when(requestMapper.getRequests(friendshipUser, requestsOfMyUser, List.of(), List.of(recommendedFriendsResponse2))).thenReturn(requestResponseMyUser);
         when(userMapper.userToRecommendedFriend(user3, user3.getImageUrl(), 1)).thenReturn(recommendedFriendsResponse2);
-        when(fileService.downloadFile(user3.getImageUrl() + ".png")).thenReturn(user3.getImageUrl());
-
+        when(fileService.downloadFile(user3.getImageUrl())).thenReturn(user3.getImageUrl());
 
         var result = requestsService.getRequests(user.getEmail());
 

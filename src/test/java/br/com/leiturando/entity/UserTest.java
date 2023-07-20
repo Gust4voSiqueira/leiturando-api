@@ -3,10 +3,14 @@ package br.com.leiturando.entity;
 import br.com.leiturando.domain.Const;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
 import static br.com.leiturando.Consts.PASSWORD_DEFAULT;
+
+@ExtendWith(MockitoExtension.class)
 public class UserTest {
 
     public static User builderUser() {
