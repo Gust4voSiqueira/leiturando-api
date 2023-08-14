@@ -3,6 +3,7 @@ package br.com.leiturando.controller;
 import br.com.leiturando.BaseAuthTest;
 import br.com.leiturando.controller.response.RequestResponse;
 import br.com.leiturando.controller.response.SendRequestResponse;
+import br.com.leiturando.controller.response.UserResponse;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
 import br.com.leiturando.service.requests.AcceptRequestService;
@@ -33,7 +34,7 @@ class RequestsControllerTest extends BaseAuthTest {
     SendRequestsService sendRequestsService;
 
     @Mock
-    SendRequestResponse sendRequestResponse;
+    UserResponse sendRequestResponse;
 
     @Mock
     AcceptRequestService acceptRequestService;
@@ -46,6 +47,7 @@ class RequestsControllerTest extends BaseAuthTest {
     User user;
     User user2;
     RequestResponse requestResponse;
+    UserResponse userResponse;
 
     @BeforeEach
     public void init() {
@@ -59,26 +61,34 @@ class RequestsControllerTest extends BaseAuthTest {
                 .imageUrl("Batman")
                 .friendships(List.of())
                 .build();
-        sendRequestResponse = SendRequestResponse
+        sendRequestResponse = UserResponse
                 .builder()
-                .requesterId(user.getId())
-                .requestedId(user2.getId())
+                .id(user2.getId())
+                .name(user2.getName())
+                .urlImage(user.getImageUrl())
+                .build();
+        userResponse = UserResponse
+                .builder()
+                .id(user2.getId())
+                .name(user2.getName())
+                .urlImage(user2.getImageUrl())
                 .build();
         requestResponse = RequestResponse
                 .builder()
+                .requests(List.of())
                 .usersRecommended(List.of())
+                .requestsSend(List.of())
                 .friends(List.of())
-                .usersRecommended(List.of())
                 .build();
     }
 
     @Test
     void sendRequestCorrectly() {
-        when(sendRequestsService.sendRequest(user.getEmail(), user2.getId())).thenReturn(sendRequestResponse);
+        when(sendRequestsService.sendRequest(user.getEmail(), user2.getId())).thenReturn(userResponse);
 
-        var result = requestsController.sendRequest(2L);
+        UserResponse result = requestsController.sendRequest(2L);
 
-        Assertions.assertEquals(sendRequestResponse, result);
+        Assertions.assertEquals(userResponse, result);
     }
 
     @Test

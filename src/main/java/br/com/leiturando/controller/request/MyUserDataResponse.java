@@ -1,9 +1,6 @@
-package br.com.leiturando.controller.response;
+package br.com.leiturando.controller.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -11,12 +8,12 @@ import java.time.LocalDateTime;
 @Setter
 @Builder
 @AllArgsConstructor
-public class MyUserResponse {
-    private String image;
+@NoArgsConstructor
+public class MyUserDataResponse {
     private String name;
+    private LocalDateTime createdAt;
     private Integer level;
     private Integer breakthrough;
-    private LocalDateTime createdAt;
     private Integer matches;
     private Integer correct;
     private Integer wrong;

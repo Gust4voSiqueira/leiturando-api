@@ -58,7 +58,7 @@ class AcceptRequestServiceTest {
     void failedToacceptRequestThatIsNotFound() {
         when(userRepository.findByEmail(user3.getEmail())).thenReturn(user3);
         when(userRepository.findById(requester.getId())).thenReturn(Optional.ofNullable(requester));
-        when(friendRequestRepository.findByRequestedAndRequester(user3, requester)).thenReturn(null);
+        when(friendRequestRepository.findByRequestedAndRequester(user3.getId(), requester.getId())).thenReturn(null);
 
         String emailMyUser = user3.getEmail();
         Long idRequester = requester.getId();

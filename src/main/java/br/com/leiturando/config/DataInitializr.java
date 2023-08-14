@@ -13,7 +13,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -68,7 +69,20 @@ public class DataInitializr implements ApplicationListener<ContextRefreshedEvent
     }
 
     public void createUser(String name, String email, String character, String password, Role role) {
-        User user = new User(name, email, character, 1, 0, password, Arrays.asList(role));
+        User user = User.builder()
+                .name(name)
+                .email(email)
+                .image(character)
+                .level(1)
+                .breakthrough(80)
+                .password(password)
+                .roles(Collections.singletonList(role))
+                .createdAt(LocalDateTime.now())
+                .wrong(0)
+                .correct(0)
+                .matches(0)
+                .dateOfBirth(LocalDateTime.of(2000, 11, 24, 22, 1))
+                .build();
         userRepository.save(user);
     }
 

@@ -26,16 +26,11 @@ public class RegisterUserService {
     UserRepository userRepository;
 
     @Autowired
-    RoleRepository roleRepository;
-
-    @Autowired
     PasswordEncoder passwordEncoder;
 
     @Autowired
     RegisterUserMapper registerUserMapper;
 
-    @Autowired
-    FileService fileService;
 
     public RegisterUserResponse registerService(RegisterUserRequest userRequest) throws Exception {
         User existingUser = userRepository.findByEmail(userRequest.getEmail());
@@ -48,12 +43,10 @@ public class RegisterUserService {
         }
 
         String imageUser;
-        if(userRequest.getFile() != null) {
-            imageUser = fileService.uploadFile(userRequest.getFile());
-        } else if(userRequest.getCharacterName() != null) {
+        if(userRequest.getCharacterName() != null) {
             imageUser = userRequest.getCharacterName();
         } else {
-            throw new ImageNotFoundException("Escolha uma imagem para o perfil.");
+            imageUser = "NoImage";
         }
 
         User userSave = createUser(userRequest, imageUser);

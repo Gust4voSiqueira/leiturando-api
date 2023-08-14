@@ -9,9 +9,7 @@ import com.amazonaws.services.ecr.model.ImageNotFoundException;
 import com.amazonaws.services.pinpoint.model.BadRequestException;
 import com.amazonaws.services.pinpoint.model.InternalServerErrorException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/user")
@@ -20,10 +18,10 @@ public class UserController {
     @Autowired
     RegisterUserService registerUserService;
 
-    @PostMapping("/register")
-    public RegisterUserResponse registerUser(@ModelAttribute RegisterUserRequest userRequest) {
+    @PostMapping(value = "/register")
+    public RegisterUserResponse registerUser(@RequestBody RegisterUserRequest registerUserRequest) {
         try {
-            return registerUserService.registerService(userRequest);
+            return registerUserService.registerService(registerUserRequest);
         } catch (UserExistsException | ImageNotFoundException e) {
             ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
             throw new BadRequestException(errorResponse.getMessage());

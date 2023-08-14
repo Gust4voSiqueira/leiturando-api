@@ -57,7 +57,7 @@ class RemoveRequestServiceTest {
     void failedToRemoveRequestThatIsMine() {
         when(userRepository.findByEmail(myUser.getEmail())).thenReturn(myUser);
         when(userRepository.findById(requester.getId())).thenReturn(Optional.ofNullable(requester));
-        when(friendRequestRepository.findByRequestedAndRequester(myUser, requester)).thenReturn(null);
+        when(friendRequestRepository.findByRequestedAndRequester(myUser.getId(), requester.getId())).thenReturn(null);
 
         String emailMyUser = myUser.getEmail();
         Long idRequester = requester.getId();

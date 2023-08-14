@@ -1,10 +1,11 @@
 package br.com.leiturando.service.requests;
 
-import br.com.leiturando.controller.response.RequestResponse;
+import br.com.leiturando.controller.response.UserResponse;
 import br.com.leiturando.entity.FriendRequests;
 import br.com.leiturando.entity.Friendship;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.mapper.FriendshipMapper;
+import br.com.leiturando.mapper.UserMapper;
 import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.FriendshipRepository;
 import br.com.leiturando.repository.UserRepository;
@@ -29,9 +30,9 @@ public class AcceptRequestService {
     FriendshipRepository friendshipRepository;
 
     @Autowired
-    RequestsService requestsService;
+    UserMapper userMapper;
 
-    public RequestResponse acceptRequest(String email, Long requesterId) {
+    public UserResponse acceptRequest(String email, Long requesterId) {
         User myUser = userRepository.findByEmail(email);
         Optional<User> requester = userRepository.findById(requesterId);
 
@@ -39,7 +40,7 @@ public class AcceptRequestService {
             throw new NotFoundException("Usuário não encontrado.");
         }
 
-        FriendRequests request = friendRequestRepository.findByRequestedAndRequester(myUser, requester.get());
+        FriendRequests request = friendRequestRepository.findByRequestedAndRequester(myUser.getId(), requester.get().getId());
 
         if(request == null) {
             throw new NotFoundException("Solicitação não encontrada.");
@@ -50,6 +51,6 @@ public class AcceptRequestService {
         friendshipRepository.save(friendship);
         friendRequestRepository.delete(request);
 
-        return requestsService.getRequests(myUser.getEmail());
+        return userMapper.userToResponse(requester.get());
     }
 }

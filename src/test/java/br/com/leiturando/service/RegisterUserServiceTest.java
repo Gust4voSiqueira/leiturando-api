@@ -49,7 +49,6 @@ class RegisterUserServiceTest {
     List<User> users;
     RegisterUserRequest registerUserRequest;
     RegisterUserResponse registerUserResponse;
-    MultipartFile file;
     Role role;
 
     @BeforeEach
@@ -63,7 +62,6 @@ class RegisterUserServiceTest {
                 .password(user.getPassword())
                 .confirmPassword(user.getPassword())
                 .build();
-        file = new MockMultipartFile("profile", "profile", MediaType.IMAGE_JPEG_VALUE, "ImageProfile".getBytes());
         role = new Role(Const.ROLE_CLIENT);
         registerUserResponse = RegisterUserResponse
                 .builder()
@@ -93,19 +91,13 @@ class RegisterUserServiceTest {
 
     @Test
     void registerUserWithFileSuccess() throws Exception {
-        registerUserResponse.setUrlImage(file.getName());
-        registerUserRequest.setFile(file);
-
-        String imageName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(null);
         when(userRepository.save(user)).thenReturn(user);
         when(passwordEncoder.encode(registerUserRequest.getPassword())).thenReturn(registerUserRequest.getPassword());
         when(registerUserMapper.userToRequest(user)).thenReturn(registerUserResponse);
-        when(fileService.uploadFile(file)).thenReturn(imageName);
         when(registerUserMapper.requestToUser(
                 registerUserRequest,
-                imageName,
+                "NoImage",
                 passwordEncoder.encode(registerUserRequest.getPassword()))).thenReturn(user);
 
         var result = registerUserService.registerService(registerUserRequest);
@@ -116,7 +108,6 @@ class RegisterUserServiceTest {
     @Test
     void failedToRegisterUserAlreadyRegistered() {
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(user);
-        registerUserRequest.setFile(file);
 
         UserExistsException exception = Assertions.assertThrows(UserExistsException.class,
                 () -> registerUserService.registerService(registerUserRequest));
@@ -128,23 +119,10 @@ class RegisterUserServiceTest {
     void failedToRegisterUserToPasswordDifferent() {
         registerUserRequest.setConfirmPassword("123");
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(null);
-        registerUserRequest.setFile(file);
 
         PasswordException exception = Assertions.assertThrows(PasswordException.class,
                 () -> registerUserService.registerService(registerUserRequest));
 
         Assertions.assertEquals("As senhas são diferentes.", exception.getLocalizedMessage());
-    }
-
-    @Test
-    void failedToRegisterUserWithoutFileAndCharacter() {
-        registerUserRequest.setCharacterName(null);
-        registerUserRequest.setFile(null);
-        when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(null);
-
-        ImageNotFoundException exception = Assertions.assertThrows(ImageNotFoundException.class,
-                () -> registerUserService.registerService(registerUserRequest));
-
-        Assertions.assertEquals("Escolha uma imagem para o perfil.", exception.getErrorMessage());
     }
 }

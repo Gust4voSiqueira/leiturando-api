@@ -1,14 +1,16 @@
 package br.com.leiturando.service.requests;
 
-import br.com.leiturando.controller.response.RequestResponse;
+import br.com.leiturando.controller.response.UserResponse;
 import br.com.leiturando.entity.FriendRequests;
 import br.com.leiturando.entity.User;
+import br.com.leiturando.mapper.UserMapper;
 import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.UserRepository;
 import com.amazonaws.services.kms.model.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -20,9 +22,9 @@ public class RemoveRequestService {
     FriendRequestRepository friendRequestRepository;
 
     @Autowired
-    RequestsService requestsService;
+    UserMapper userMapper;
 
-    public RequestResponse removeRequest(String email, Long requesterId) {
+    public UserResponse removeRequest(String email, Long requesterId) {
         User myUser = userRepository.findByEmail(email);
         Optional<User> requester = userRepository.findById(requesterId);
 
@@ -30,7 +32,7 @@ public class RemoveRequestService {
             throw new NotFoundException("Usuário não encontrado.");
         }
 
-        FriendRequests request = friendRequestRepository.findByRequestedAndRequester(myUser, requester.get());
+        FriendRequests request = friendRequestRepository.findByRequestedAndRequester(myUser.getId(), requester.get().getId());
 
         if(request == null) {
             throw new NotFoundException("Solicitação não encontrada.");
@@ -38,6 +40,10 @@ public class RemoveRequestService {
 
         friendRequestRepository.delete(request);
 
-        return requestsService.getRequests(myUser.getEmail());
+        if(Objects.equals(request.getRequested().getId(), myUser.getId())) {
+            return userMapper.userToResponse(request.getRequester());
+        }
+
+        return userMapper.userToResponse(request.getRequested());
     }
 }

@@ -91,7 +91,6 @@ class UserControllerTest extends BaseAuthTest {
 
     @Test
     void registerUserWithFileSuccess() throws Exception {
-        userRequestWithoutCharacter.setFile(file);
         when(registerUserService.registerService(userRequestWithoutCharacter))
                 .thenReturn(registerUserWithoutCharacterResponse);
 
@@ -103,7 +102,6 @@ class UserControllerTest extends BaseAuthTest {
 
     @Test
     void failedToRegisterUserWithoutFileAndCharacterName() throws Exception {
-        userRequestWithoutCharacter.setFile(null);
         userRequestWithoutCharacter.setCharacterName(null);
 
         RegisterUserRequest registerUserRequest = RegisterUserRequest
@@ -125,7 +123,6 @@ class UserControllerTest extends BaseAuthTest {
 
     @Test
     void failedToRegisterUserDuplicateEmail() throws Exception {
-        userRequestWithoutCharacter.setFile(null);
         userRequestWithoutCharacter.setCharacterName(null);
 
         RegisterUserRequest registerUserRequest = RegisterUserRequest
@@ -147,7 +144,6 @@ class UserControllerTest extends BaseAuthTest {
 
     @Test
     void failedToRegisterUserDifferencePasswords() throws Exception {
-        userRequestWithoutCharacter.setFile(null);
         userRequestWithoutCharacter.setCharacterName(null);
 
         RegisterUserRequest registerUserRequest = RegisterUserRequest

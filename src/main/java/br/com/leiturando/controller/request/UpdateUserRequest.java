@@ -9,11 +9,9 @@ import java.time.LocalDateTime;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterUserRequest {
-    private String characterName;
+public class UpdateUserRequest {
     private String name;
     private String email;
     private LocalDateTime dateOfBirth;
-    private String password;
-    private String confirmPassword;
+    private String characterName;
 }

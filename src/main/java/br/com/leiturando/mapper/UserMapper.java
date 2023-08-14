@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
     public UserResponse userToResponse(User user) {
-        return new UserResponse(user.getId(), user.getImageUrl(), user.getName());
+        return new UserResponse(user.getId(), user.getImage(), user.getName());
     }
 
     public RecommendedFriendsResponse userToRecommendedFriend(User user, String image, Integer mutualFriends) {

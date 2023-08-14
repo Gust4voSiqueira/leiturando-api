@@ -9,6 +9,7 @@ import br.com.leiturando.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -18,20 +19,26 @@ public class RegisterUserMapper {
 
     public User requestToUser(RegisterUserRequest userRequest, String urlImage, String password) {
         Role role = roleRepository.findByName(Const.ROLE_CLIENT);
-        return new User(
-                userRequest.getName(),
-                userRequest.getEmail(),
-                urlImage,
-                1,
-                0,
-                password,
-                List.of(role)
-        );
+
+        return User.builder()
+                .name(userRequest.getName())
+                .email(userRequest.getEmail())
+                .password(password)
+                .image(urlImage)
+                .dateOfBirth(userRequest.getDateOfBirth())
+                .level(1)
+                .breakthrough(0)
+                .roles(List.of(role))
+                .wrong(0)
+                .correct(0)
+                .matches(0)
+                .createdAt(LocalDateTime.now())
+                .build();
     }
 
     public RegisterUserResponse userToRequest(User user) {
         return new RegisterUserResponse(
-                user.getImageUrl(),
+                user.getImage(),
                 user.getName(),
                 user.getEmail()
         );

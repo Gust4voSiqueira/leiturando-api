@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,20 +13,26 @@ import java.util.List;
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "User_entity")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-    private String imageUrl;
+    private String image;
     private String name;
+    private LocalDateTime dateOfBirth;
     @Column(unique = true)
     private String email;
     @JsonIgnore
     private String password;
     private Integer level;
     private Integer breakthrough;
+    private LocalDateTime createdAt;
+    private Integer matches;
+    private Integer correct;
+    private Integer wrong;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name="user_role",
@@ -45,16 +52,4 @@ public class User {
         this.roles = user.getRoles();
         this.id = user.getId();
     }
-
-    public User(String name, String email, String imageUrl, Integer level, Integer breakthrough, String password, List<Role> roles) {
-        this.name = name;
-        this.email = email;
-        this.imageUrl = imageUrl;
-        this.level = level;
-        this.breakthrough = breakthrough;
-        this.roles = roles;
-        this.password = password;
-    }
-
-    public User() {}
 }
