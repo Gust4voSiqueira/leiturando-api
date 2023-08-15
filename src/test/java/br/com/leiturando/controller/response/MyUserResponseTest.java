@@ -8,7 +8,7 @@ public class MyUserResponseTest {
     public static MyUserResponse builderMyUserResponse() {
         return MyUserResponse
                 .builder()
-                .urlImage("Batman")
+                .image("Batman")
                 .name("Gustavo")
                 .level(1)
                 .breakthrough(0)
@@ -19,7 +19,7 @@ public class MyUserResponseTest {
     void buildMyUserResponseCorrectly() {
         var myUserResponse = builderMyUserResponse();
 
-        Assertions.assertNotNull(myUserResponse.getUrlImage());
+        Assertions.assertNotNull(myUserResponse.getImage());
         Assertions.assertNotNull(myUserResponse.getName());
         Assertions.assertNotNull(myUserResponse.getLevel());
         Assertions.assertNotNull(myUserResponse.getBreakthrough());

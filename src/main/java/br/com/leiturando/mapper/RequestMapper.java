@@ -18,8 +18,8 @@ public class RequestMapper {
         return new SendRequestResponse(friendRequest.getRequester().getId(), friendRequest.getRequested().getId());
     }
 
-    public ListRequestsResponse myUserResponse(User user, String image, Integer mutualFriends) {
-        return new ListRequestsResponse(user.getId(), user.getName(), image, mutualFriends);
+    public ListRequestsResponse myUserResponse(User user, Integer mutualFriends) {
+        return new ListRequestsResponse(user.getId(), user.getName(), user.getImage(), mutualFriends);
     }
 
     public RequestResponse getRequests(List<UserResponse> friends, List<ListRequestsResponse> requests,  List<ListRequestsResponse> requestsSend, List<RecommendedFriendsResponse> usersRecommended) {

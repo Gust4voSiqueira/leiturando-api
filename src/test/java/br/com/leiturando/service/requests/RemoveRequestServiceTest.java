@@ -40,7 +40,7 @@ class RemoveRequestServiceTest {
                 .name("Brena")
                 .email("brena@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Batman")
+                .image("Batman")
                 .friendships(List.of())
                 .build();
         myUser = User
@@ -49,7 +49,7 @@ class RemoveRequestServiceTest {
                 .name("Matias")
                 .email("matias@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Flash")
+                .image("Flash")
                 .friendships(List.of())
                 .build();
     }

@@ -41,12 +41,12 @@ class FriendshipServiceTest {
                 .name("rogerio")
                 .email("rogerio@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Batman")
+                .image("Batman")
                 .friendships(List.of())
                 .build();
         userResponse = UserResponse
                 .builder()
-                .urlImage(user2.getImageUrl())
+                .image(user2.getImage())
                 .name(user2.getName())
                 .build();
         user1 = User.builder()
@@ -54,7 +54,7 @@ class FriendshipServiceTest {
                 .name("gustavo")
                 .email("gustavo@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Batman")
+                .image("Batman")
                 .level(1)
                 .breakthrough(0)
                 .friendships(friendship)

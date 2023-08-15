@@ -11,6 +11,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserResponse {
     private Long id;
-    private String urlImage;
+    private String image;
     private String name;
 }

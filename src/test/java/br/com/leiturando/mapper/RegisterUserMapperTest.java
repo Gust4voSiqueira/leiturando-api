@@ -36,7 +36,7 @@ class RegisterUserMapperTest {
         user = UserTest.builderUser();
         registerUserRequest = RegisterUserRequest
                 .builder()
-                    .characterName(user.getImageUrl())
+                    .characterName(user.getImage())
                     .name(user.getName())
                     .email(user.getEmail())
                     .password(user.getPassword())
@@ -57,7 +57,7 @@ class RegisterUserMapperTest {
                     .name(registerUserRequest.getName())
                     .email(registerUserRequest.getEmail())
                     .password(registerUserRequest.getPassword())
-                    .imageUrl(registerUserRequest.getCharacterName())
+                    .image(registerUserRequest.getCharacterName())
                     .level(1)
                     .breakthrough(0)
                     .friendships(List.of())
@@ -65,7 +65,7 @@ class RegisterUserMapperTest {
                 .build();
 
         Assertions.assertEquals(expected.getName(), result.getName());
-        Assertions.assertEquals(expected.getImageUrl(), result.getImageUrl());
+        Assertions.assertEquals(expected.getImage(), result.getImage());
         Assertions.assertEquals(expected.getLevel(), result.getLevel());
         Assertions.assertEquals(expected.getBreakthrough(), result.getBreakthrough());
         Assertions.assertEquals(expected.getPassword(), result.getPassword());
@@ -80,13 +80,13 @@ class RegisterUserMapperTest {
         RegisterUserResponse result = registerUserMapper.userToRequest(user);
         RegisterUserResponse expected = RegisterUserResponse
                 .builder()
-                .urlImage(user.getImageUrl())
+                .image(user.getImage())
                 .name(user.getName())
                 .email(user.getEmail())
                 .build();
 
         Assertions.assertEquals(expected.getName(), result.getName());
-        Assertions.assertEquals(expected.getUrlImage(), result.getUrlImage());
+        Assertions.assertEquals(expected.getImage(), result.getImage());
         Assertions.assertEquals(expected.getEmail(), result.getEmail());
     }
 }

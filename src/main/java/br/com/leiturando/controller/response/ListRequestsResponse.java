@@ -12,6 +12,6 @@ import lombok.Setter;
 public class ListRequestsResponse {
     private Long id;
     private String name;
-    private String urlImage;
+    private String image;
     private Integer mutualFriends;
 }

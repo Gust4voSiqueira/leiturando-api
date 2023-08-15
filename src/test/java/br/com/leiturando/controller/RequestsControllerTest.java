@@ -58,20 +58,20 @@ class RequestsControllerTest extends BaseAuthTest {
                 .name("rogerio")
                 .email("rogerio@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Batman")
+                .image("Batman")
                 .friendships(List.of())
                 .build();
         sendRequestResponse = UserResponse
                 .builder()
                 .id(user2.getId())
                 .name(user2.getName())
-                .urlImage(user.getImageUrl())
+                .image(user.getImage())
                 .build();
         userResponse = UserResponse
                 .builder()
                 .id(user2.getId())
                 .name(user2.getName())
-                .urlImage(user2.getImageUrl())
+                .image(user2.getImage())
                 .build();
         requestResponse = RequestResponse
                 .builder()

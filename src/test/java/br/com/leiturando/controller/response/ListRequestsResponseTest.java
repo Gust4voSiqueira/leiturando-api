@@ -9,7 +9,7 @@ public class ListRequestsResponseTest {
                 .builder()
                 .id(1L)
                 .name("Gustavo")
-                .urlImage("Batman")
+                .image("Batman")
                 .mutualFriends(1)
                 .build();
     }
@@ -20,7 +20,7 @@ public class ListRequestsResponseTest {
 
         Assertions.assertNotNull(listRequestsResponse.getId());
         Assertions.assertNotNull(listRequestsResponse.getName());
-        Assertions.assertNotNull(listRequestsResponse.getUrlImage());
+        Assertions.assertNotNull(listRequestsResponse.getImage());
         Assertions.assertNotNull(listRequestsResponse.getMutualFriends());
     }
 }

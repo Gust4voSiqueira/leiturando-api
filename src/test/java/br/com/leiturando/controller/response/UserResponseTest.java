@@ -8,7 +8,7 @@ public class UserResponseTest {
         return UserResponse
                 .builder()
                 .id(1L)
-                .urlImage("Batman")
+                .image("Batman")
                 .name("Gustavo")
                 .build();
     }
@@ -18,7 +18,7 @@ public class UserResponseTest {
         var userResponse = builderUserResponse();
 
         Assertions.assertNotNull(userResponse.getId());
-        Assertions.assertNotNull(userResponse.getUrlImage());
+        Assertions.assertNotNull(userResponse.getImage());
         Assertions.assertNotNull(userResponse.getName());
     }
 }

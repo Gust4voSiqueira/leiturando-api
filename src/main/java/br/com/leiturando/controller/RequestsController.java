@@ -4,7 +4,6 @@ import br.com.leiturando.controller.response.RequestResponse;
 import br.com.leiturando.controller.response.ErrorResponse;
 import br.com.leiturando.controller.response.UserResponse;
 import br.com.leiturando.entity.User;
-import br.com.leiturando.service.FileService;
 import br.com.leiturando.service.requests.AcceptRequestService;
 import br.com.leiturando.service.requests.RemoveRequestService;
 import br.com.leiturando.service.requests.RequestsService;
@@ -16,9 +15,7 @@ import org.hibernate.procedure.ParameterStrategyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.file.FileSystemException;
 
 @RestController
 @RequestMapping("/request")
@@ -31,9 +28,6 @@ public class RequestsController {
 
     @Autowired
     RequestsService requestsService;
-
-    @Autowired
-    FileService fileService;
 
     @Autowired
     RemoveRequestService removeRequestService;

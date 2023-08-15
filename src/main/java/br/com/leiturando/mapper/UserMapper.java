@@ -11,7 +11,7 @@ public class UserMapper {
         return new UserResponse(user.getId(), user.getImage(), user.getName());
     }
 
-    public RecommendedFriendsResponse userToRecommendedFriend(User user, String image, Integer mutualFriends) {
-        return new RecommendedFriendsResponse(user.getId(), user.getName(), image, mutualFriends);
+    public RecommendedFriendsResponse userToRecommendedFriend(User user, Integer mutualFriends) {
+        return new RecommendedFriendsResponse(user.getId(), user.getName(), user.getImage(), mutualFriends);
     }
 }

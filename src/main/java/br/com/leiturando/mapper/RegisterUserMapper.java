@@ -17,14 +17,14 @@ public class RegisterUserMapper {
     @Autowired
     RoleRepository roleRepository;
 
-    public User requestToUser(RegisterUserRequest userRequest, String urlImage, String password) {
+    public User requestToUser(RegisterUserRequest userRequest, String image, String password) {
         Role role = roleRepository.findByName(Const.ROLE_CLIENT);
 
         return User.builder()
                 .name(userRequest.getName())
                 .email(userRequest.getEmail())
                 .password(password)
-                .image(urlImage)
+                .image(image)
                 .dateOfBirth(userRequest.getDateOfBirth())
                 .level(1)
                 .breakthrough(0)

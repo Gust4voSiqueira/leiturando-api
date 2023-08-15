@@ -9,7 +9,6 @@ import br.com.leiturando.entity.UserTest;
 import br.com.leiturando.exception.UserExistsException;
 import br.com.leiturando.mapper.RegisterUserMapper;
 import br.com.leiturando.repository.UserRepository;
-import com.amazonaws.services.ecr.model.ImageNotFoundException;
 import org.bouncycastle.openssl.PasswordException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,10 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collections;
 import java.util.List;
@@ -38,9 +34,6 @@ class RegisterUserServiceTest {
 
     @Mock
     PasswordEncoder passwordEncoder;
-
-    @Mock
-    FileService fileService;
 
     @Mock
     RegisterUserMapper registerUserMapper;
@@ -72,7 +65,7 @@ class RegisterUserServiceTest {
 
     @Test
     void registerUserWithoutFileSuccess() throws Exception {
-        registerUserResponse.setUrlImage("Batman");
+        registerUserResponse.setImage("Batman");
         registerUserRequest.setCharacterName("Batman");
 
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(null);

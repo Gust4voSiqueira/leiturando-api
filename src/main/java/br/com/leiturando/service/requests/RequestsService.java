@@ -10,15 +10,12 @@ import br.com.leiturando.mapper.RequestMapper;
 import br.com.leiturando.mapper.UserMapper;
 import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.UserRepository;
-import br.com.leiturando.service.FileService;
 import br.com.leiturando.service.FriendshipService;
-import com.amazonaws.services.pinpoint.model.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,9 +38,6 @@ public class RequestsService {
     @Autowired
     RequestMapper requestMapper;
 
-    @Autowired
-    FileService fileService;
-
     public RequestResponse getRequests(String email) {
         User user = userRepository.findByEmail(email);
 
@@ -64,15 +58,8 @@ public class RequestsService {
 
         List<User> requestsReceivedUsers = requests.stream().map(request -> userRepository.findById(request.getRequester().getId()).get()).collect(Collectors.toList());
 
-        return requestsReceivedUsers.stream().map(userLocal -> {
-            try {
-                String image = fileService.downloadFile(userLocal.getImage());
-
-                return requestMapper.myUserResponse(userLocal, image, searchMutualFriends(user, userLocal));
-            } catch (IOException e) {
-                throw new BadRequestException(e.getMessage());
-            }
-        }).collect(Collectors.toList());
+        return requestsReceivedUsers.stream().map(userLocal -> requestMapper.myUserResponse(userLocal, searchMutualFriends(user, userLocal)))
+                .collect(Collectors.toList());
     }
 
     public List<ListRequestsResponse> searchRequestsSend(User user) {
@@ -89,15 +76,7 @@ public class RequestsService {
 
         return requestsSendUsers
                 .stream()
-                .map(userLocal -> {
-                    try {
-                        String image = fileService.downloadFile(userLocal.getImage());
-
-                        return requestMapper.myUserResponse(userLocal, image, searchMutualFriends(user, userLocal));
-                    } catch (IOException e) {
-                        throw new BadRequestException(e.getMessage());
-                    }
-                })
+                .map(userLocal -> requestMapper.myUserResponse(userLocal, searchMutualFriends(user, userLocal)))
                 .collect(Collectors.toList());
     }
 
@@ -129,16 +108,7 @@ public class RequestsService {
                 .filter(userLocal -> !myFriendshipIds.contains(userLocal.getId()))
                 .filter(userLocal -> !requestsIds.contains(userLocal.getId()))
                 .filter(userLocal -> !requestsSendIds.contains(userLocal.getId()))
-                .map(userLocal -> {
-                    try {
-                        String image = fileService.downloadFile(userLocal.getImage());
-
-                        return userMapper.userToRecommendedFriend(userLocal, image, searchMutualFriends(user, userLocal));
-                    } catch (IOException e) {
-                        throw new BadRequestException(e.getMessage());
-                    }
-
-                    })
+                .map(userLocal -> userMapper.userToRecommendedFriend(userLocal, searchMutualFriends(user, userLocal)))
                 .collect(Collectors.toList());
     }
 }

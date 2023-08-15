@@ -7,7 +7,7 @@ public class RegisterUserResponseTest {
     public static RegisterUserResponse builderRegisterUserResponse() {
         return RegisterUserResponse
                 .builder()
-                .urlImage("Batman")
+                .image("Batman")
                 .name("Gustavo")
                 .email("gustavosiqueira082@gmail.com")
                 .build();
@@ -17,7 +17,7 @@ public class RegisterUserResponseTest {
     void buildRegisterUserResponseCorrectly() {
         var registerUserResponse = builderRegisterUserResponse();
 
-        Assertions.assertNotNull(registerUserResponse.getUrlImage());
+        Assertions.assertNotNull(registerUserResponse.getImage());
         Assertions.assertNotNull(registerUserResponse.getName());
         Assertions.assertNotNull(registerUserResponse.getEmail());
     }

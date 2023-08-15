@@ -32,9 +32,6 @@ class MyUserServiceTest {
     @Mock
     UserRepository userRepository;
 
-    @Mock
-    FileService fileService;
-
     User user;
     User user2;
     User user3;
@@ -52,7 +49,7 @@ class MyUserServiceTest {
                 .name("Brena")
                 .email("brena@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("batman")
+                .image("batman")
                 .friendships(List.of())
                 .build();
         user3 = User.builder()
@@ -60,34 +57,34 @@ class MyUserServiceTest {
                 .name("Marcelo")
                 .email("marcelo@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("harry")
+                .image("harry")
                 .friendships(List.of())
                 .build();
         recommendedFriendsResponse1 = RecommendedFriendsResponse
                 .builder()
                 .id(user2.getId())
                 .name(user2.getName())
-                .urlImage(user2.getImageUrl())
+                .image(user2.getImage())
                 .mutualFriends(1)
                 .build();
         recommendedFriendsResponse2 = RecommendedFriendsResponse
                 .builder()
                 .id(user3.getId())
                 .name(user3.getName())
-                .urlImage(user3.getImageUrl())
+                .image(user3.getImage())
                 .mutualFriends(1)
                 .build();
         requestsResponse = ListRequestsResponse
                 .builder()
                 .id(4L)
                 .name("Rogério")
-                .urlImage("thor")
+                .image("thor")
                 .mutualFriends(1)
                 .build();
         requestsOfMyUser = List.of(requestsResponse);
         myUserResponse = MyUserResponse
                 .builder()
-                .urlImage(user.getImageUrl())
+                .image(user.getImage())
                 .name(user.getName())
                 .level(user.getLevel())
                 .breakthrough(user.getBreakthrough())
@@ -97,8 +94,7 @@ class MyUserServiceTest {
     @Test
     void myUserServiceTest() throws IOException {
         when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
-        when(myUserMapper.myUserDtoToResponse(user, user.getImageUrl())).thenReturn(myUserResponse);
-        when(fileService.downloadFile(user.getImageUrl())).thenReturn(user.getImageUrl());
+        when(myUserMapper.myUserDtoToResponse(user)).thenReturn(myUserResponse);
 
         var result = myUserService.myUserService(user.getEmail());
 

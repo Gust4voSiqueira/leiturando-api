@@ -18,9 +18,6 @@ public class MyUserService {
     @Autowired
     UserRepository userRepository;
 
-    @Autowired
-    FileService fileService;
-
     public MyUserResponse myUserService(String email) throws IOException {
         User user = userRepository.findByEmail(email);
 
@@ -38,41 +35,22 @@ public class MyUserService {
     }
 
     private User updateUserFields(User user, UpdateUserRequest userRequest) {
-        User updatedUser = new User();
-
-        if (userRequest.getEmail() != null) {
-            updatedUser.setEmail(userRequest.getEmail());
-        } else {
-            updatedUser.setEmail(user.getEmail());
+        if (userRequest.getEmail() != null && !userRequest.getEmail().equals("")) {
+            user.setEmail(userRequest.getEmail());
         }
 
-        if (userRequest.getName() != null) {
-            updatedUser.setName(userRequest.getName());
-        } else {
-            updatedUser.setName(user.getName());
+        if (userRequest.getName() != null && !userRequest.getName().equals("")) {
+            user.setName(userRequest.getName());
         }
 
-        if (userRequest.getCharacterName() != null) {
-            updatedUser.setImage(userRequest.getCharacterName());
-        } else {
-            updatedUser.setImage(user.getImage());
+        if (userRequest.getCharacterName() != null && !userRequest.getCharacterName().equals("")) {
+            user.setImage(userRequest.getCharacterName());
         }
 
         if (userRequest.getDateOfBirth() != null) {
-            updatedUser.setDateOfBirth(userRequest.getDateOfBirth());
-        } else {
-            updatedUser.setDateOfBirth(user.getDateOfBirth());
+            user.setDateOfBirth(userRequest.getDateOfBirth());
         }
 
-        updatedUser.setId(user.getId());
-        updatedUser.setLevel(user.getLevel());
-        updatedUser.setBreakthrough(user.getBreakthrough());
-        updatedUser.setCreatedAt(user.getCreatedAt());
-        updatedUser.setMatches(user.getMatches());
-        updatedUser.setCorrect(user.getCorrect());
-        updatedUser.setWrong(user.getWrong());
-        updatedUser.setPassword(user.getPassword());
-
-        return updatedUser;
+        return user;
     }
 }

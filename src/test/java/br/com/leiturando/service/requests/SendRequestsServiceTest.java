@@ -56,7 +56,7 @@ class SendRequestsServiceTest {
                 .name("rogerio")
                 .email("rogerio@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Batman")
+                .image("Batman")
                 .friendships(List.of())
                 .build();
         user3 = User.builder()
@@ -64,7 +64,7 @@ class SendRequestsServiceTest {
                 .name("carlos")
                 .email("carlos@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Flash")
+                .image("Flash")
                 .friendships(List.of())
                 .build();
         friendRequests = FriendRequests.builder()
@@ -80,7 +80,7 @@ class SendRequestsServiceTest {
                 .builder()
                 .id(user2.getId())
                 .name(user2.getName())
-                .urlImage(user2.getImageUrl())
+                .image(user2.getImage())
                 .build();
         email = user.getEmail();
     }

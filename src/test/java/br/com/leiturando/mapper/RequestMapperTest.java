@@ -37,7 +37,7 @@ class RequestMapperTest {
                     .name("rogerio")
                     .email("rogerio@gmail.com")
                     .password(PASSWORD_DEFAULT)
-                    .imageUrl("Batman")
+                    .image("Batman")
                     .friendships(List.of())
                 .build();
 
@@ -50,20 +50,20 @@ class RequestMapperTest {
                 .builder()
                     .id(user1.getId())
                     .name(user1.getName())
-                    .urlImage(user1.getImageUrl())
+                    .image(user1.getImage())
                 .build()
         );
         requests = List.of(ListRequestsResponse
                 .builder()
                     .name(user2.getName())
-                    .urlImage(user2.getImageUrl())
+                    .image(user2.getImage())
                     .mutualFriends(1)
                 .build()
         );
         usersRecommended = List.of(RecommendedFriendsResponse
                 .builder()
                         .id(3L)
-                        .urlImage("spiderman")
+                        .image("spiderman")
                         .name("Fred")
                         .mutualFriends(1)
                 .build()
@@ -93,18 +93,18 @@ class RequestMapperTest {
 
     @Test
     void setMyUserResponse() {
-        ListRequestsResponse result = requestMapper.myUserResponse(user1, user1.getImageUrl(), 1);
+        ListRequestsResponse result = requestMapper.myUserResponse(user1, 1);
         ListRequestsResponse expected = ListRequestsResponse
                 .builder()
                     .id(user1.getId())
                     .name(user1.getName())
-                    .urlImage(user1.getImageUrl())
+                    .image(user1.getImage())
                     .mutualFriends(1)
                 .build();
 
         Assertions.assertEquals(expected.getId(), result.getId());
         Assertions.assertEquals(expected.getName(), result.getName());
-        Assertions.assertEquals(expected.getUrlImage(), result.getUrlImage());
+        Assertions.assertEquals(expected.getImage(), result.getImage());
         Assertions.assertEquals(expected.getMutualFriends(), result.getMutualFriends());
     }
 

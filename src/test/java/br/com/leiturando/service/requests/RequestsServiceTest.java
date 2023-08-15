@@ -8,7 +8,6 @@ import br.com.leiturando.entity.UserTest;
 import br.com.leiturando.mapper.RequestMapper;
 import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.UserRepository;
-import br.com.leiturando.service.FileService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -38,9 +37,6 @@ class RequestsServiceTest {
     @Mock
     RequestMapper sendRequestMapper;
 
-    @Mock
-    FileService fileService;
-
     User user;
 
     User user2;
@@ -57,7 +53,7 @@ class RequestsServiceTest {
                 .name("rogerio")
                 .email("rogerio@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Batman")
+                .image("Batman")
                 .friendships(List.of())
                 .build();
         user3 = User.builder()
@@ -65,7 +61,7 @@ class RequestsServiceTest {
                 .name("carlos")
                 .email("carlos@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Flash")
+                .image("Flash")
                 .friendships(List.of())
                 .build();
         user4 = User.builder()
@@ -73,7 +69,7 @@ class RequestsServiceTest {
                 .name("joao")
                 .email("joao@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Flash")
+                .image("Flash")
                 .friendships(List.of())
                 .build();
         friendRequests = FriendRequests.builder()
@@ -83,18 +79,17 @@ class RequestsServiceTest {
                 .build();
         listRequestsResponse = ListRequestsResponse.builder()
                 .name(user2.getName())
-                .urlImage(user2.getImageUrl())
+                .image(user2.getImage())
                 .mutualFriends(0)
                 .build();
     }
 
 
     @Test
-    void searchRequestsCorrectly() throws IOException {
+    void searchRequestsCorrectly() {
         when(friendRequestRepository.findAllByRequestedId(user.getId())).thenReturn(List.of(friendRequests));
         when(userRepository.findById(user2.getId())).thenReturn(Optional.ofNullable(user2));
-        when(sendRequestMapper.myUserResponse(user2, user2.getImageUrl(), 0)).thenReturn(listRequestsResponse);
-        when(fileService.downloadFile(user2.getImageUrl())).thenReturn(user.getImageUrl());
+        when(sendRequestMapper.myUserResponse(user2, 0)).thenReturn(listRequestsResponse);
 
         var result = requestsService.searchRequestsReceived(user);
         var expected = List.of(listRequestsResponse);

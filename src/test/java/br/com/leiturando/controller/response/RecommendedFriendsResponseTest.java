@@ -9,7 +9,7 @@ public class RecommendedFriendsResponseTest {
                 .builder()
                 .id(1L)
                 .name("Gustavo")
-                .urlImage("Batman")
+                .image("Batman")
                 .mutualFriends(1)
                 .build();
     }
@@ -20,7 +20,7 @@ public class RecommendedFriendsResponseTest {
 
         Assertions.assertNotNull(recommendedFriendsResponse.getId());
         Assertions.assertNotNull(recommendedFriendsResponse.getName());
-        Assertions.assertNotNull(recommendedFriendsResponse.getUrlImage());
+        Assertions.assertNotNull(recommendedFriendsResponse.getImage());
         Assertions.assertNotNull(recommendedFriendsResponse.getMutualFriends());
     }
 }

@@ -66,13 +66,13 @@ class UserControllerTest extends BaseAuthTest {
         file = new MockMultipartFile("perfil", "../utils/perfil.jpeg", MediaType.IMAGE_JPEG_VALUE, "ImageProfile".getBytes());
         registerUserBatmanResponse = RegisterUserResponse
                 .builder()
-                .urlImage(userRequestBatman.getCharacterName())
+                .image(userRequestBatman.getCharacterName())
                 .name(userRequestBatman.getName())
                 .email(userRequestBatman.getEmail())
                 .build();
         registerUserWithoutCharacterResponse = RegisterUserResponse
                 .builder()
-                .urlImage(file.getName())
+                .image(file.getName())
                 .name(userRequestWithoutCharacter.getName())
                 .email(userRequestWithoutCharacter.getEmail())
                 .build();

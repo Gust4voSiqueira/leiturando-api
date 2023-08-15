@@ -33,7 +33,7 @@ class FriendshipMapperTest {
                 .name("rogerio")
                 .email("rogerio@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Batman")
+                .image("Batman")
                 .friendships(List.of())
                 .build();
         friendRequests = FriendRequests

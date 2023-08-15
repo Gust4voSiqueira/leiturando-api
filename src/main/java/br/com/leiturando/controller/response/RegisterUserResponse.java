@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterUserResponse {
-    private String urlImage;
+    private String image;
     private String name;
     private String email;
 }

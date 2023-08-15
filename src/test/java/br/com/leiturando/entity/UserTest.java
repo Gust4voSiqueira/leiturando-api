@@ -20,7 +20,7 @@ public class UserTest {
                 .name("gustavo")
                 .email("gustavo@gmail.com")
                 .password(PASSWORD_DEFAULT)
-                .imageUrl("Batman")
+                .image("Batman")
                 .roles(List.of(role))
                 .level(1)
                 .breakthrough(0)
@@ -35,7 +35,7 @@ public class UserTest {
         Assertions.assertNotNull(result.getName());
         Assertions.assertNotNull(result.getEmail());
         Assertions.assertNotNull(result.getPassword());
-        Assertions.assertNotNull(result.getImageUrl());
+        Assertions.assertNotNull(result.getImage());
         Assertions.assertNotNull(result.getRoles());
         Assertions.assertNotNull(result.getLevel());
         Assertions.assertNotNull(result.getBreakthrough());

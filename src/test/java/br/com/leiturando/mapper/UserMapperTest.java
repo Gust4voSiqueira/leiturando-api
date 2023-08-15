@@ -29,28 +29,28 @@ class UserMapperTest {
         UserResponse expected = UserResponse
                 .builder()
                     .id(user.getId())
-                    .urlImage(user.getImageUrl())
+                    .image(user.getImage())
                     .name(user.getName())
                 .build();
 
         Assertions.assertEquals(expected.getId(), result.getId());
-        Assertions.assertEquals(expected.getUrlImage(), result.getUrlImage());
+        Assertions.assertEquals(expected.getImage(), result.getImage());
         Assertions.assertEquals(expected.getName(), result.getName());
     }
 
     @Test
     void setUserToRecommendedFriend() {
-        RecommendedFriendsResponse result = userMapper.userToRecommendedFriend(user, user.getImageUrl(), 1);
+        RecommendedFriendsResponse result = userMapper.userToRecommendedFriend(user, 1);
         RecommendedFriendsResponse expected = RecommendedFriendsResponse
                 .builder()
                     .id(user.getId())
                     .name(user.getName())
-                    .urlImage(user.getImageUrl())
+                    .image(user.getImage())
                     .mutualFriends(1)
                 .build();
 
         Assertions.assertEquals(expected.getId(), result.getId());
-        Assertions.assertEquals(expected.getUrlImage(), result.getUrlImage());
+        Assertions.assertEquals(expected.getImage(), result.getImage());
         Assertions.assertEquals(expected.getName(), result.getName());
         Assertions.assertEquals(expected.getMutualFriends(), result.getMutualFriends());
     }
