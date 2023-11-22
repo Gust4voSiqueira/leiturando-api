@@ -1,7 +1,7 @@
 package br.com.leiturando.mapper;
 
-import br.com.leiturando.controller.request.RegisterUserRequest;
-import br.com.leiturando.controller.response.RegisterUserResponse;
+import br.com.leiturando.controller.request.user.RegisterUserRequest;
+import br.com.leiturando.controller.request.user.RegisterUserRequestTest;
 import br.com.leiturando.domain.Const;
 import br.com.leiturando.entity.Role;
 import br.com.leiturando.entity.User;
@@ -34,14 +34,7 @@ class RegisterUserMapperTest {
     @BeforeEach
     public void init() {
         user = UserTest.builderUser();
-        registerUserRequest = RegisterUserRequest
-                .builder()
-                    .characterName(user.getImage())
-                    .name(user.getName())
-                    .email(user.getEmail())
-                    .password(user.getPassword())
-                    .confirmPassword(user.getPassword())
-                .build();
+        registerUserRequest = RegisterUserRequestTest.builderUserRequest();
         role = new Role(Const.ROLE_CLIENT);
     }
 
@@ -71,22 +64,5 @@ class RegisterUserMapperTest {
         Assertions.assertEquals(expected.getPassword(), result.getPassword());
         Assertions.assertNotNull(expected.getFriendships());
         Assertions.assertNotNull(expected.getRoles());
-    }
-
-    @Test
-    void setUserToRequest() {
-        user = UserTest.builderUser();
-
-        RegisterUserResponse result = registerUserMapper.userToRequest(user);
-        RegisterUserResponse expected = RegisterUserResponse
-                .builder()
-                .image(user.getImage())
-                .name(user.getName())
-                .email(user.getEmail())
-                .build();
-
-        Assertions.assertEquals(expected.getName(), result.getName());
-        Assertions.assertEquals(expected.getImage(), result.getImage());
-        Assertions.assertEquals(expected.getEmail(), result.getEmail());
     }
 }

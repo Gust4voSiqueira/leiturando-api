@@ -1,6 +1,5 @@
 package br.com.leiturando.service;
 
-
 import br.com.leiturando.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

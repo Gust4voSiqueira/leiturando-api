@@ -1,15 +1,12 @@
 package br.com.leiturando.service;
 
-import br.com.leiturando.controller.request.RegisterUserRequest;
-import br.com.leiturando.controller.response.RegisterUserResponse;
+import br.com.leiturando.controller.request.user.RegisterUserRequest;
 import br.com.leiturando.domain.Const;
 import br.com.leiturando.entity.Role;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
-import br.com.leiturando.exception.UserExistsException;
 import br.com.leiturando.mapper.RegisterUserMapper;
 import br.com.leiturando.repository.UserRepository;
-import org.bouncycastle.openssl.PasswordException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +14,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Collections;
@@ -41,7 +40,6 @@ class RegisterUserServiceTest {
     User user;
     List<User> users;
     RegisterUserRequest registerUserRequest;
-    RegisterUserResponse registerUserResponse;
     Role role;
 
     @BeforeEach
@@ -56,66 +54,33 @@ class RegisterUserServiceTest {
                 .confirmPassword(user.getPassword())
                 .build();
         role = new Role(Const.ROLE_CLIENT);
-        registerUserResponse = RegisterUserResponse
-                .builder()
-                .name(registerUserRequest.getName())
-                .email(registerUserRequest.getEmail())
-                .build();
     }
 
     @Test
-    void registerUserWithoutFileSuccess() throws Exception {
-        registerUserResponse.setImage("Batman");
+    void registerUserSuccess() {
         registerUserRequest.setCharacterName("Batman");
 
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(null);
         when(userRepository.save(user)).thenReturn(user);
         when(passwordEncoder.encode(registerUserRequest.getPassword())).thenReturn(registerUserRequest.getPassword());
-        when(registerUserMapper.userToRequest(user)).thenReturn(registerUserResponse);
         when(registerUserMapper.requestToUser(
                 registerUserRequest,
                 registerUserRequest.getCharacterName(),
                 passwordEncoder.encode(registerUserRequest.getPassword()))).thenReturn(user);
 
         var result = registerUserService.registerService(registerUserRequest);
+        var expected = new ResponseEntity<>(HttpStatus.CREATED);
 
-        Assertions.assertEquals(registerUserResponse, result);
-    }
-
-    @Test
-    void registerUserWithFileSuccess() throws Exception {
-        when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(null);
-        when(userRepository.save(user)).thenReturn(user);
-        when(passwordEncoder.encode(registerUserRequest.getPassword())).thenReturn(registerUserRequest.getPassword());
-        when(registerUserMapper.userToRequest(user)).thenReturn(registerUserResponse);
-        when(registerUserMapper.requestToUser(
-                registerUserRequest,
-                "NoImage",
-                passwordEncoder.encode(registerUserRequest.getPassword()))).thenReturn(user);
-
-        var result = registerUserService.registerService(registerUserRequest);
-
-        Assertions.assertEquals(registerUserResponse, result);
+        Assertions.assertEquals(expected, result);
     }
 
     @Test
     void failedToRegisterUserAlreadyRegistered() {
         when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(user);
 
-        UserExistsException exception = Assertions.assertThrows(UserExistsException.class,
-                () -> registerUserService.registerService(registerUserRequest));
+        var result = registerUserService.registerService(registerUserRequest);
+        var expected = new ResponseEntity<>("Já existe um usuário com este e-mail.", HttpStatus.CONFLICT);
 
-        Assertions.assertEquals("Já existe um usuário com este e-mail.", exception.getLocalizedMessage());
-    }
-
-    @Test
-    void failedToRegisterUserToPasswordDifferent() {
-        registerUserRequest.setConfirmPassword("123");
-        when(userRepository.findByEmail(registerUserRequest.getEmail())).thenReturn(null);
-
-        PasswordException exception = Assertions.assertThrows(PasswordException.class,
-                () -> registerUserService.registerService(registerUserRequest));
-
-        Assertions.assertEquals("As senhas são diferentes.", exception.getLocalizedMessage());
+        Assertions.assertEquals(result, expected);
     }
 }

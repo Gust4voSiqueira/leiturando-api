@@ -1,5 +1,6 @@
 package br.com.leiturando.controller.response;
 
+import br.com.leiturando.controller.response.requests.RecommendedFriendsResponse;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

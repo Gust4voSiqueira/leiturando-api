@@ -1,7 +1,6 @@
 package br.com.leiturando.mapper;
 
-import br.com.leiturando.controller.request.RegisterUserRequest;
-import br.com.leiturando.controller.response.RegisterUserResponse;
+import br.com.leiturando.controller.request.user.RegisterUserRequest;
 import br.com.leiturando.domain.Const;
 import br.com.leiturando.entity.Role;
 import br.com.leiturando.entity.User;
@@ -34,13 +33,5 @@ public class RegisterUserMapper {
                 .matches(0)
                 .createdAt(LocalDateTime.now())
                 .build();
-    }
-
-    public RegisterUserResponse userToRequest(User user) {
-        return new RegisterUserResponse(
-                user.getImage(),
-                user.getName(),
-                user.getEmail()
-        );
     }
 }

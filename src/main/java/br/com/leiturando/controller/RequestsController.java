@@ -1,8 +1,7 @@
 package br.com.leiturando.controller;
 
-import br.com.leiturando.controller.response.RequestResponse;
+import br.com.leiturando.controller.response.requests.RequestResponse;
 import br.com.leiturando.controller.response.ErrorResponse;
-import br.com.leiturando.controller.response.UserResponse;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.service.requests.AcceptRequestService;
 import br.com.leiturando.service.requests.RemoveRequestService;
@@ -13,6 +12,7 @@ import com.amazonaws.services.pinpoint.model.BadRequestException;
 import com.amazonaws.services.pinpoint.model.InternalServerErrorException;
 import org.hibernate.procedure.ParameterStrategyException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,7 +41,7 @@ public class RequestsController {
     }
 
     @PostMapping("/send/{requestedId}")
-    public UserResponse sendRequest(@PathVariable Long requestedId) {
+    public ResponseEntity<String> sendRequest(@PathVariable Long requestedId) {
         try {
             User user = (User) SecurityContextHolder.getContext()
                     .getAuthentication()
@@ -60,12 +60,13 @@ public class RequestsController {
     }
 
     @PostMapping("/accept/{requesterId}")
-    public UserResponse acceptRequest(@PathVariable Long requesterId) {
+    public void acceptRequest(@PathVariable Long requesterId) {
         try {
             User user = (User) SecurityContextHolder.getContext()
                     .getAuthentication()
                     .getPrincipal();
-            return acceptRequestService.acceptRequest(user.getEmail(), requesterId);
+
+            acceptRequestService.acceptRequest(user.getEmail(), requesterId);
         } catch (NotFoundException e) {
             ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
             throw new NotFoundException(errorResponse.getMessage());
@@ -73,12 +74,12 @@ public class RequestsController {
     }
 
     @DeleteMapping("/remove/{requesterId}")
-    public UserResponse removeRequest(@PathVariable Long requesterId) {
+    public void removeRequest(@PathVariable Long requesterId) {
         try {
             User user = (User) SecurityContextHolder.getContext()
                     .getAuthentication()
                     .getPrincipal();
-            return removeRequestService.removeRequest(user.getEmail(), requesterId);
+            removeRequestService.removeRequest(user.getEmail(), requesterId);
         } catch (NotFoundException e) {
             ErrorResponse errorResponse = new ErrorResponse(e.getMessage());
             throw new NotFoundException(errorResponse.getMessage());

@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static br.com.leiturando.domain.Const.SCORE_TO_ADVANCE_LEVEL;
+
 @Entity
 @Builder
 @Getter
@@ -51,5 +53,20 @@ public class User {
         this.password = user.getPassword();
         this.roles = user.getRoles();
         this.id = user.getId();
+    }
+
+    public void updateUserStatistics(int correctWordCount, int incorrectWordCount, int score) {
+        boolean isAdvancedLevel = this.getBreakthrough() + score >= SCORE_TO_ADVANCE_LEVEL;
+
+        if (isAdvancedLevel) {
+            this.setLevel(this.getLevel() + 1);
+            this.setBreakthrough(this.getBreakthrough() + score - SCORE_TO_ADVANCE_LEVEL);
+        } else {
+            this.setBreakthrough(this.getBreakthrough() + score);
+        }
+
+        this.setMatches(this.getMatches() + 1);
+        this.setCorrect(this.getCorrect() + correctWordCount);
+        this.setWrong(this.getWrong() + incorrectWordCount);
     }
 }

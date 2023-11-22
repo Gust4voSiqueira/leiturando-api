@@ -1,7 +1,9 @@
 package br.com.leiturando.mapper;
 
-import br.com.leiturando.controller.response.RecommendedFriendsResponse;
-import br.com.leiturando.controller.response.UserResponse;
+import br.com.leiturando.controller.response.requests.RecommendedFriendsResponse;
+import br.com.leiturando.controller.response.user.SearchUserResponse;
+import br.com.leiturando.controller.response.user.UserResponse;
+import br.com.leiturando.domain.TypesCard;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
 import org.junit.jupiter.api.Assertions;
@@ -53,5 +55,24 @@ class UserMapperTest {
         Assertions.assertEquals(expected.getImage(), result.getImage());
         Assertions.assertEquals(expected.getName(), result.getName());
         Assertions.assertEquals(expected.getMutualFriends(), result.getMutualFriends());
+    }
+
+    @Test
+    void setUserToSearchUser() {
+        SearchUserResponse result = userMapper.userToSearchUser(user, 1, TypesCard.FRIEND);
+        SearchUserResponse expected = SearchUserResponse
+                .builder()
+                .id(user.getId())
+                .name(user.getName())
+                .image(user.getImage())
+                .mutualFriends(1)
+                .typeCard(TypesCard.FRIEND)
+                .build();
+
+        Assertions.assertEquals(expected.getId(), result.getId());
+        Assertions.assertEquals(expected.getName(), result.getName());
+        Assertions.assertEquals(expected.getImage(), result.getImage());
+        Assertions.assertEquals(expected.getMutualFriends(), result.getMutualFriends());
+        Assertions.assertEquals(expected.getTypeCard(), result.getTypeCard());
     }
 }

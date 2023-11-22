@@ -1,16 +1,17 @@
 package br.com.leiturando.controller;
 
 import br.com.leiturando.BaseAuthTest;
-import br.com.leiturando.controller.request.RegisterUserRequest;
-import br.com.leiturando.controller.response.RegisterUserResponse;
+import br.com.leiturando.controller.request.user.RegisterUserRequest;
+import br.com.leiturando.controller.request.user.RegisterUserRequestTest;
+import br.com.leiturando.controller.response.user.RankingResponse;
+import br.com.leiturando.controller.response.user.RankingResponseTest;
+import br.com.leiturando.controller.response.user.SearchUserResponse;
+import br.com.leiturando.controller.response.user.SearchUserResponseTest;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
-import br.com.leiturando.exception.UserExistsException;
+import br.com.leiturando.service.FriendshipService;
+import br.com.leiturando.service.MyUserService;
 import br.com.leiturando.service.RegisterUserService;
-import com.amazonaws.services.ecr.model.ImageNotFoundException;
-import com.amazonaws.services.pinpoint.model.BadRequestException;
-import com.amazonaws.services.pinpoint.model.InternalServerErrorException;
-import org.bouncycastle.openssl.PasswordException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,13 +38,20 @@ class UserControllerTest extends BaseAuthTest {
     @Mock
     RegisterUserService registerUserService;
 
+    @Mock
+    FriendshipService friendshipService;
+
+    @Mock
+    MyUserService myUserService;
+
     User user;
     List<User> users;
+    SearchUserResponse searchUserResponse;
     RegisterUserRequest userRequestBatman;
-    RegisterUserResponse registerUserBatmanResponse;
+    RegisterUserRequest registerUserRequest;
     RegisterUserRequest userRequestWithoutCharacter;
-    RegisterUserResponse registerUserWithoutCharacterResponse;
     MultipartFile file;
+    RankingResponse rankingResponse;
 
     @BeforeEach
     void init() {
@@ -64,44 +74,34 @@ class UserControllerTest extends BaseAuthTest {
                 .confirmPassword(user.getPassword())
                 .build();
         file = new MockMultipartFile("perfil", "../utils/perfil.jpeg", MediaType.IMAGE_JPEG_VALUE, "ImageProfile".getBytes());
-        registerUserBatmanResponse = RegisterUserResponse
-                .builder()
-                .image(userRequestBatman.getCharacterName())
-                .name(userRequestBatman.getName())
-                .email(userRequestBatman.getEmail())
-                .build();
-        registerUserWithoutCharacterResponse = RegisterUserResponse
-                .builder()
-                .image(file.getName())
-                .name(userRequestWithoutCharacter.getName())
-                .email(userRequestWithoutCharacter.getEmail())
-                .build();
+        searchUserResponse = SearchUserResponseTest.builderSearchUserResponse();
+        registerUserRequest = RegisterUserRequestTest.builderUserRequest();
+        rankingResponse = RankingResponseTest.builderRankingResponse();
     }
 
     @Test
-    void registerUserWithoutFileSuccess() throws Exception {
+    void failedToRegisterUserAlreadyExists() {
+        when(registerUserService.registerService(registerUserRequest)).thenReturn(new ResponseEntity<>("Já existe um usuário com este e-mail.", HttpStatus.CONFLICT));
+
+        var result = userController.registerUser(registerUserRequest);
+        var expected = new ResponseEntity<>("Já existe um usuário com este e-mail.", HttpStatus.CONFLICT);
+
+        Assertions.assertEquals(expected, result);
+    }
+
+    @Test
+    void registerUserSuccess() {
         when(registerUserService.registerService(userRequestBatman))
-                .thenReturn(registerUserBatmanResponse);
+                .thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
 
         var result = userController.registerUser(userRequestBatman);
-        var expectedResult = registerUserBatmanResponse;
+        var expected = new ResponseEntity<>(HttpStatus.CREATED);
 
-        Assertions.assertEquals(result, expectedResult);
+        Assertions.assertEquals(result, expected);
     }
 
     @Test
-    void registerUserWithFileSuccess() throws Exception {
-        when(registerUserService.registerService(userRequestWithoutCharacter))
-                .thenReturn(registerUserWithoutCharacterResponse);
-
-        var result = userController.registerUser(userRequestWithoutCharacter);
-        var expectedResult = registerUserWithoutCharacterResponse;
-
-        Assertions.assertEquals(result, expectedResult);
-    }
-
-    @Test
-    void failedToRegisterUserWithoutFileAndCharacterName() throws Exception {
+    void failedToRegisterUserDuplicateEmail() {
         userRequestWithoutCharacter.setCharacterName(null);
 
         RegisterUserRequest registerUserRequest = RegisterUserRequest
@@ -113,39 +113,16 @@ class UserControllerTest extends BaseAuthTest {
                 .build();
 
         when(registerUserService.registerService(registerUserRequest))
-                .thenThrow(new ImageNotFoundException("Escolha uma imagem para o perfil."));
+                .thenReturn(new ResponseEntity<>("Já existe um usuário com este e-mail.", HttpStatus.CONFLICT));
 
-        Exception exception = Assertions.assertThrows(BadRequestException.class,
-                () -> userController.registerUser(registerUserRequest));
+        var result = userController.registerUser(registerUserRequest);
+        var expected = new ResponseEntity<>("Já existe um usuário com este e-mail.", HttpStatus.CONFLICT);
 
-        Assertions.assertNotNull(exception.getLocalizedMessage());
+        Assertions.assertEquals(result, expected);
     }
 
     @Test
-    void failedToRegisterUserDuplicateEmail() throws Exception {
-        userRequestWithoutCharacter.setCharacterName(null);
-
-        RegisterUserRequest registerUserRequest = RegisterUserRequest
-                .builder()
-                .characterName(user.getName())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .confirmPassword(user.getPassword())
-                .build();
-
-        when(registerUserService.registerService(registerUserRequest))
-                .thenThrow(new UserExistsException("Já existe um usuário com este e-mail."));
-
-        Exception exception = Assertions.assertThrows(BadRequestException.class,
-                () -> userController.registerUser(registerUserRequest));
-
-        Assertions.assertNotNull(exception.getMessage());
-    }
-
-    @Test
-    void failedToRegisterUserDifferencePasswords() throws Exception {
-        userRequestWithoutCharacter.setCharacterName(null);
-
+    void failedToRegisterUserDifferencePasswords() {
         RegisterUserRequest registerUserRequest = RegisterUserRequest
                 .builder()
                 .characterName(user.getName())
@@ -155,11 +132,30 @@ class UserControllerTest extends BaseAuthTest {
                 .build();
 
         when(registerUserService.registerService(registerUserRequest))
-                .thenThrow(new PasswordException("As senhas são diferentes."));
+                .thenReturn(new ResponseEntity<>("As senhas são diferentes.", HttpStatus.BAD_REQUEST));
 
-        Exception exception = Assertions.assertThrows(InternalServerErrorException.class,
-                () -> userController.registerUser(registerUserRequest));
+        var result = userController.registerUser(registerUserRequest);
+        var expected = new ResponseEntity<>("As senhas são diferentes.", HttpStatus.BAD_REQUEST);
 
-        Assertions.assertNotNull(exception.getMessage());
+        Assertions.assertEquals(result, expected);
+    }
+
+    @Test
+    void searchUsersCorrectly() {
+        when(friendshipService.searchUsers("gusta", user.getEmail())).thenReturn(List.of(searchUserResponse));
+
+        var result = userController.searchUsers("gusta");
+        var expected =  List.of(searchUserResponse);
+
+        Assertions.assertEquals(expected, result);
+    }
+
+    @Test
+    void getGlobalRanking() {
+        when(myUserService.getGlobalRanking()).thenReturn(rankingResponse);
+
+        var result = userController.getGlobalRanking();
+
+        Assertions.assertEquals(rankingResponse, result);
     }
 }

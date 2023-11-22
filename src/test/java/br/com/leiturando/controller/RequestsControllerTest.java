@@ -1,9 +1,8 @@
 package br.com.leiturando.controller;
 
 import br.com.leiturando.BaseAuthTest;
-import br.com.leiturando.controller.response.RequestResponse;
-import br.com.leiturando.controller.response.SendRequestResponse;
-import br.com.leiturando.controller.response.UserResponse;
+import br.com.leiturando.controller.response.requests.RequestResponse;
+import br.com.leiturando.controller.response.user.UserResponse;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
 import br.com.leiturando.service.requests.AcceptRequestService;
@@ -19,6 +18,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -84,11 +85,12 @@ class RequestsControllerTest extends BaseAuthTest {
 
     @Test
     void sendRequestCorrectly() {
-        when(sendRequestsService.sendRequest(user.getEmail(), user2.getId())).thenReturn(userResponse);
+        when(sendRequestsService.sendRequest(user.getEmail(), user2.getId())).thenReturn(new ResponseEntity<>(HttpStatus.CREATED));
 
-        UserResponse result = requestsController.sendRequest(2L);
+        var result = requestsController.sendRequest(2L);
+        var expected = new ResponseEntity<>(HttpStatus.CREATED);
 
-        Assertions.assertEquals(userResponse, result);
+        Assertions.assertEquals(expected, result);
     }
 
     @Test

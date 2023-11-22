@@ -1,16 +1,15 @@
 package br.com.leiturando.service.requests;
 
-import br.com.leiturando.controller.response.UserResponse;
 import br.com.leiturando.entity.FriendRequests;
 import br.com.leiturando.entity.Friendship;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.mapper.FriendshipMapper;
-import br.com.leiturando.mapper.UserMapper;
 import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.FriendshipRepository;
 import br.com.leiturando.repository.UserRepository;
-import com.amazonaws.services.kms.model.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -29,28 +28,25 @@ public class AcceptRequestService {
     @Autowired
     FriendshipRepository friendshipRepository;
 
-    @Autowired
-    UserMapper userMapper;
-
-    public UserResponse acceptRequest(String email, Long requesterId) {
+    public ResponseEntity<String> acceptRequest(String email, Long requesterId) {
         User myUser = userRepository.findByEmail(email);
         Optional<User> requester = userRepository.findById(requesterId);
 
         if(requester.isEmpty()) {
-            throw new NotFoundException("Usuário não encontrado.");
+            return new ResponseEntity<>("Usuário não encontrado.", HttpStatus.NOT_FOUND);
         }
 
-        FriendRequests request = friendRequestRepository.findByRequestedAndRequester(myUser.getId(), requester.get().getId());
+        Optional<FriendRequests> request = friendRequestRepository.findByRequestedAndRequester(myUser.getId(), requester.get().getId());
 
-        if(request == null) {
-            throw new NotFoundException("Solicitação não encontrada.");
+        if(request.isEmpty()) {
+            return new ResponseEntity<>("Solicitação não encontrada.", HttpStatus.NOT_FOUND);
         }
 
-        Friendship friendship = friendshipMapper.requestToFriendship(request);
+        Friendship friendship = friendshipMapper.requestToFriendship(request.get());
 
         friendshipRepository.save(friendship);
-        friendRequestRepository.delete(request);
+        friendRequestRepository.delete(request.get());
 
-        return userMapper.userToResponse(requester.get());
+        return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 }

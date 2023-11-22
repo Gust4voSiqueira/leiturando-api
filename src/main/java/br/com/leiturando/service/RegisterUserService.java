@@ -1,21 +1,15 @@
 package br.com.leiturando.service;
 
-import br.com.leiturando.controller.request.RegisterUserRequest;
-import br.com.leiturando.controller.response.RegisterUserResponse;
-import br.com.leiturando.domain.Const;
-import br.com.leiturando.entity.Role;
+import br.com.leiturando.controller.request.user.RegisterUserRequest;
 import br.com.leiturando.entity.User;
-import br.com.leiturando.exception.UserExistsException;
 import br.com.leiturando.mapper.RegisterUserMapper;
-import br.com.leiturando.repository.RoleRepository;
 import br.com.leiturando.repository.UserRepository;
-import com.amazonaws.services.ecr.model.ImageNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.bouncycastle.openssl.PasswordException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Objects;
 
@@ -31,15 +25,14 @@ public class RegisterUserService {
     @Autowired
     RegisterUserMapper registerUserMapper;
 
-
-    public RegisterUserResponse registerService(RegisterUserRequest userRequest) throws Exception {
+    public ResponseEntity<String> registerService(RegisterUserRequest userRequest) {
         User existingUser = userRepository.findByEmail(userRequest.getEmail());
         if (existingUser != null) {
-            throw new UserExistsException("Já existe um usuário com este e-mail.");
+            return new ResponseEntity<>("Já existe um usuário com este e-mail.", HttpStatus.CONFLICT);
         }
 
         if(!Objects.equals(userRequest.getConfirmPassword(), userRequest.getPassword())) {
-            throw new PasswordException("As senhas são diferentes.");
+            return new ResponseEntity<>("As senhas são diferentes.", HttpStatus.BAD_REQUEST);
         }
 
         String imageUser;
@@ -52,7 +45,7 @@ public class RegisterUserService {
         User userSave = createUser(userRequest, imageUser);
         userRepository.save(userSave);
 
-        return registerUserMapper.userToRequest(userSave);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     private User createUser(RegisterUserRequest userRequest, String file) {

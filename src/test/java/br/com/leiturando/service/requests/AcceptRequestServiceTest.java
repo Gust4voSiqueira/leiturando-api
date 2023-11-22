@@ -1,9 +1,9 @@
 package br.com.leiturando.service.requests;
 
+import br.com.leiturando.entity.FriendRequests;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.UserRepository;
-import com.amazonaws.services.kms.model.NotFoundException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +11,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +32,8 @@ class AcceptRequestServiceTest {
     FriendRequestRepository friendRequestRepository;
 
     User requester;
-    User user3;
+    User myUser;
+    FriendRequests friendRequest;
 
     @BeforeEach
     public void init() {
@@ -43,7 +46,7 @@ class AcceptRequestServiceTest {
                 .image("Batman")
                 .friendships(List.of())
                 .build();
-        user3 = User
+        myUser = User
                 .builder()
                 .id(3L)
                 .name("Matias")
@@ -52,20 +55,49 @@ class AcceptRequestServiceTest {
                 .image("Flash")
                 .friendships(List.of())
                 .build();
+        friendRequest = FriendRequests
+                .builder()
+                .id(1L)
+                .requested(myUser)
+                .requester(requester)
+                .build();
     }
 
     @Test
-    void failedToacceptRequestThatIsNotFound() {
-        when(userRepository.findByEmail(user3.getEmail())).thenReturn(user3);
+    void failedToAcceptRequestThatIsNotFound() {
+        when(userRepository.findByEmail(myUser.getEmail())).thenReturn(myUser);
         when(userRepository.findById(requester.getId())).thenReturn(Optional.ofNullable(requester));
-        when(friendRequestRepository.findByRequestedAndRequester(user3.getId(), requester.getId())).thenReturn(null);
+        when(friendRequestRepository.findByRequestedAndRequester(myUser.getId(), requester.getId())).thenReturn(Optional.empty());
 
-        String emailMyUser = user3.getEmail();
+        String emailMyUser = myUser.getEmail();
         Long idRequester = requester.getId();
 
-        NotFoundException exception = Assertions.assertThrows(NotFoundException.class,
-                () -> acceptRequestService.acceptRequest(emailMyUser, idRequester));
+        var result = acceptRequestService.acceptRequest(emailMyUser, idRequester);
+        var expected = new ResponseEntity<>("Solicitação não encontrada.", HttpStatus.NOT_FOUND);
 
-        Assertions.assertNotNull(exception.getMessage());
+        Assertions.assertEquals(expected, result);
+    }
+
+    @Test
+    void failedToAcceptRequestUserNotFound() {
+        when(userRepository.findByEmail(myUser.getEmail())).thenReturn(myUser);
+        when(userRepository.findById(3L)).thenReturn(Optional.empty());
+
+        var result = acceptRequestService.acceptRequest(myUser.getEmail(), 3L);
+        var expected =  new ResponseEntity<>("Usuário não encontrado.", HttpStatus.NOT_FOUND);
+
+        Assertions.assertEquals(expected, result);
+    }
+
+    @Test
+    void failedToAcceptRequestNotFound() {
+        when(userRepository.findByEmail(myUser.getEmail())).thenReturn(myUser);
+        when(userRepository.findById(requester.getId())).thenReturn(Optional.ofNullable(requester));
+        when(friendRequestRepository.findByRequestedAndRequester(myUser.getId(), requester.getId())).thenReturn(Optional.empty());
+
+        var result = acceptRequestService.acceptRequest(myUser.getEmail(), requester.getId());
+        var expected =  new ResponseEntity<>("Solicitação não encontrada.", HttpStatus.NOT_FOUND);
+
+        Assertions.assertEquals(result, expected);
     }
 }

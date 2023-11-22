@@ -14,10 +14,10 @@ import static br.com.leiturando.Consts.PASSWORD_DEFAULT;
 public class UserTest {
 
     public static User builderUser() {
-        var role = new Role(Const.ROLE_ADMIN);;
+        var role = new Role(Const.ROLE_ADMIN);
         return User.builder()
                 .id(1L)
-                .name("gustavo")
+                .name("Gustavo")
                 .email("gustavo@gmail.com")
                 .password(PASSWORD_DEFAULT)
                 .image("Batman")
@@ -25,6 +25,9 @@ public class UserTest {
                 .level(1)
                 .breakthrough(0)
                 .friendships(List.of())
+                .wrong(0)
+                .matches(0)
+                .correct(0)
                 .build();
     }
 

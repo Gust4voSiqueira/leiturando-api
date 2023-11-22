@@ -1,7 +1,10 @@
 package br.com.leiturando.mapper;
 
 
-import br.com.leiturando.controller.response.*;
+import br.com.leiturando.controller.response.requests.ListRequestsResponse;
+import br.com.leiturando.controller.response.requests.RecommendedFriendsResponse;
+import br.com.leiturando.controller.response.requests.RequestResponse;
+import br.com.leiturando.controller.response.user.UserResponse;
 import br.com.leiturando.entity.FriendRequests;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.entity.UserTest;
@@ -81,14 +84,6 @@ class RequestMapperTest {
 
         Assertions.assertEquals(expected.getRequester(), result.getRequester());
         Assertions.assertEquals(expected.getRequested(), result.getRequested());
-    }
-
-    @Test
-    void setRequestToResponse() {
-        SendRequestResponse result = requestMapper.requestToResponse(friendRequests);
-
-        Assertions.assertEquals(user1.getId(), result.getRequesterId());
-        Assertions.assertEquals(user2.getId(), result.getRequestedId());
     }
 
     @Test

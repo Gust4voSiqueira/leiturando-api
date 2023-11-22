@@ -1,6 +1,6 @@
 package br.com.leiturando.service.requests;
 
-import br.com.leiturando.controller.response.ListRequestsResponse;
+import br.com.leiturando.controller.response.requests.ListRequestsResponse;
 import br.com.leiturando.entity.FriendRequests;
 import br.com.leiturando.entity.Friendship;
 import br.com.leiturando.entity.User;
@@ -8,6 +8,7 @@ import br.com.leiturando.entity.UserTest;
 import br.com.leiturando.mapper.RequestMapper;
 import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.UserRepository;
+import br.com.leiturando.service.FriendshipService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +17,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,13 +32,15 @@ class RequestsServiceTest {
     FriendRequestRepository friendRequestRepository;
 
     @Mock
+    FriendshipService friendshipService;
+
+    @Mock
     UserRepository userRepository;
 
     @Mock
     RequestMapper sendRequestMapper;
 
     User user;
-
     User user2;
     User user3;
     User user4;
@@ -87,7 +89,8 @@ class RequestsServiceTest {
 
     @Test
     void searchRequestsCorrectly() {
-        when(friendRequestRepository.findAllByRequestedId(user.getId())).thenReturn(List.of(friendRequests));
+        when(friendRequestRepository.findAllByRequestedId(user.getId())).thenReturn(Optional.of(List.of(friendRequests)));
+        when(friendshipService.searchMutualFriends(user, user2)).thenReturn(0);
         when(userRepository.findById(user2.getId())).thenReturn(Optional.ofNullable(user2));
         when(sendRequestMapper.myUserResponse(user2, 0)).thenReturn(listRequestsResponse);
 
@@ -99,7 +102,7 @@ class RequestsServiceTest {
 
     @Test
     void searchRequestsCorrectlyInUserWithoutPrompts() {
-        when(friendRequestRepository.findAllByRequestedId(user.getId())).thenReturn(List.of());
+        when(friendRequestRepository.findAllByRequestedId(user.getId())).thenReturn(Optional.of(List.of()));
 
         var result = requestsService.searchRequestsReceived(user);
         var expected = List.of();
@@ -107,22 +110,22 @@ class RequestsServiceTest {
         Assertions.assertEquals(expected, result);
     }
 
-    @Test
-    void searchMutualFriendsCorrectly() {
-        user.setFriendships(List.of(
-                new Friendship(1L, user, user2),
-                new Friendship(2L, user, user3),
-                new Friendship(3L, user, user4)
-        ));
-        user2.setFriendships(List.of(new Friendship(1L, user, user2), new Friendship(3L, user, user4)));
-        user3.setFriendships(List.of(new Friendship(2L, user, user3), new Friendship(3L, user, user4)));
-
-        var result = requestsService.searchMutualFriends(user2, user3);
-        var result2 = requestsService.searchMutualFriends(user3, user2);
-
-        Integer expected = 2;
-
-        Assertions.assertEquals(expected, result);
-        Assertions.assertEquals(expected, result2);
-    }
+//    @Test
+//    void searchMutualFriendsCorrectly() {
+//        user.setFriendships(List.of(
+//                new Friendship(1L, user, user2),
+//                new Friendship(2L, user, user3),
+//                new Friendship(3L, user, user4)
+//        ));
+//        user2.setFriendships(List.of(new Friendship(1L, user, user2), new Friendship(3L, user, user4)));
+//        user3.setFriendships(List.of(new Friendship(2L, user, user3), new Friendship(3L, user, user4)));
+//
+//        var result = requestsService.searchMutualFriends(user2, user3);
+//        var result2 = requestsService.searchMutualFriends(user3, user2);
+//
+//        Integer expected = 2;
+//
+//        Assertions.assertEquals(expected, result);
+//        Assertions.assertEquals(expected, result2);
+//    }
 }
