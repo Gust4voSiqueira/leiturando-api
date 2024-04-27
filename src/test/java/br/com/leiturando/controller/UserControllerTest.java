@@ -12,6 +12,8 @@ import br.com.leiturando.entity.UserTest;
 import br.com.leiturando.service.FriendshipService;
 import br.com.leiturando.service.MyUserService;
 import br.com.leiturando.service.RegisterUserService;
+import com.amazonaws.services.pinpoint.model.BadRequestException;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -45,6 +47,7 @@ class UserControllerTest extends BaseAuthTest {
     MyUserService myUserService;
 
     User user;
+    User user2;
     List<User> users;
     SearchUserResponse searchUserResponse;
     RegisterUserRequest userRequestBatman;
@@ -56,6 +59,11 @@ class UserControllerTest extends BaseAuthTest {
     @BeforeEach
     void init() {
         user = UserTest.builderUser();
+        user2 = User
+                .builder()
+                .id(2L)
+                .name("Brena")
+                .build();
         users = Collections.singletonList(user);
         userRequestBatman = RegisterUserRequest
                 .builder()
@@ -151,11 +159,57 @@ class UserControllerTest extends BaseAuthTest {
     }
 
     @Test
+    void failedToSearchUsers() {
+        when(friendshipService.searchUsers("gusta", user.getEmail())).thenThrow(BadRequestException.class);
+
+        Assert.assertThrows(BadRequestException.class, () -> userController.searchUsers("gusta"));
+    }
+
+    @Test
+    void unfriendCorrectly() {
+        when(friendshipService.unFriend(user.getEmail(), user2.getId())).thenReturn(ResponseEntity.ok().body("Amizade desfeita."));
+
+        var result = userController.unfriend(user2.getId());
+
+        Assertions.assertEquals(result, ResponseEntity.ok().body("Amizade desfeita."));
+    }
+
+    @Test
+    void failedToUnfriend() {
+        when(friendshipService.unFriend(user.getEmail(), user2.getId())).thenThrow(BadRequestException.class);
+
+        Assert.assertThrows(BadRequestException.class, () -> userController.unfriend(user2.getId()));
+    }
+
+    @Test
     void getGlobalRanking() {
         when(myUserService.getGlobalRanking()).thenReturn(rankingResponse);
 
         var result = userController.getGlobalRanking();
 
         Assertions.assertEquals(rankingResponse, result);
+    }
+
+    @Test
+    void failedToGetGlobalRanking() {
+        when(myUserService.getGlobalRanking()).thenThrow(BadRequestException.class);
+
+        Assert.assertThrows(BadRequestException.class, () -> userController.getGlobalRanking());
+    }
+
+    @Test
+    void getFriendsRanking() {
+        when(myUserService.getFriendsRanking(user.getEmail())).thenReturn(rankingResponse);
+
+        var result = userController.getFriendsRanking();
+
+        Assertions.assertEquals(rankingResponse, result);
+    }
+
+    @Test
+    void failedToGetFriendsRanking() {
+        when(myUserService.getFriendsRanking(user.getEmail())).thenThrow(BadRequestException.class);
+
+        Assert.assertThrows(BadRequestException.class, () -> userController.getFriendsRanking());
     }
 }

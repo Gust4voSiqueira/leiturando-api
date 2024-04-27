@@ -103,12 +103,12 @@ public class MyUserService {
     }
 
     private String getField(String name) {
-        int MAX_NAME_LENGTH = 5;
+        int maxNameLength = 5;
 
-        if(name.length() < MAX_NAME_LENGTH) {
+        if(name.length() < maxNameLength) {
             return name;
         }
 
-        return name.substring(0, MAX_NAME_LENGTH);
+        return name.substring(0, maxNameLength);
     }
 }

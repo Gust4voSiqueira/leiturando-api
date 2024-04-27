@@ -48,7 +48,7 @@ class WordsControllerTest extends BaseAuthTest {
     }
 
     @Test
-    void failedToCorrectWordsWithoutToken() {
+    void correctWordsCorrectly() {
         when(wordsService.finallyWordsService(user.getEmail(), finallyWordsRequest)).thenReturn(finallyWordsResponse);
 
         var result = wordsController.correctWords(finallyWordsRequest);

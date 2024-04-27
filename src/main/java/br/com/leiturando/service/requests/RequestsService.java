@@ -85,6 +85,10 @@ public class RequestsService {
         PageRequest firstPageWithTwoElements = PageRequest.of(0, 10);
         Page<User> users = userRepository.findAll(firstPageWithTwoElements);
 
+        if(users.isEmpty()) {
+            return List.of();
+        }
+
         List<Long> myFriendshipIds = friends.stream().map(UserResponse::getId).collect(Collectors.toList());
         List<Long> requestsIds = requestsOfMyUser.stream().map(ListRequestsResponse::getId).collect(Collectors.toList());
         List<Long> requestsSendIds = requestsSend.stream().map(ListRequestsResponse::getId).collect(Collectors.toList());

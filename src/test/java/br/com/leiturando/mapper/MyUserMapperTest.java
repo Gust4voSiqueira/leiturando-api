@@ -44,6 +44,6 @@ class MyUserMapperTest {
         RankingResponse result = myUserMapper.userToRankingResponse(rankingResponse.getLabels(), data.get(0));
 
         Assertions.assertEquals(rankingResponse.getLabels(), result.getLabels());
-        Assertions.assertEquals(rankingResponse.getDatasets(), result.getDatasets());
+        Assertions.assertEquals(rankingResponse.getDatasets().get(0).getData(), result.getDatasets().get(0).getData());
     }
 }

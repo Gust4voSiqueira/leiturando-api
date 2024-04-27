@@ -54,13 +54,13 @@ public class UserController {
     }
 
     @DeleteMapping("/unfriend/{idFriend}")
-    public void unfriend(@PathVariable(value = "idFriend") Long idFriend) {
+    public ResponseEntity<String> unfriend(@PathVariable(value = "idFriend") Long idFriend) {
         try {
             User user = (User) SecurityContextHolder.getContext()
                     .getAuthentication()
                     .getPrincipal();
 
-            friendshipService.unFriend(user.getEmail(), idFriend);
+            return friendshipService.unFriend(user.getEmail(), idFriend);
         } catch (BadRequestException e) {
             throw new BadRequestException("Falha ao desfazer amizade.");
         }

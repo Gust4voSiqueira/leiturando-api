@@ -64,6 +64,7 @@ class MyUserServiceTest {
                 .email("brena@gmail.com")
                 .password(PASSWORD_DEFAULT)
                 .image("batman")
+                .level(10)
                 .friendships(List.of())
                 .build();
         user3 = User.builder()
@@ -72,6 +73,7 @@ class MyUserServiceTest {
                 .email("marcelo@gmail.com")
                 .password(PASSWORD_DEFAULT)
                 .image("harry")
+                .level(8)
                 .friendships(List.of())
                 .build();
         recommendedFriendsResponse1 = RecommendedFriendsResponse
@@ -141,8 +143,12 @@ class MyUserServiceTest {
 
     @Test
     void getGlobalRankingCorrectly() {
+        user.setName("Gusta");
+        user3.setName("Marce");
+
         List<String> fields = Stream.of(user, user2, user3).map(User::getName).collect(Collectors.toList());
         List<Integer> data = Stream.of(user, user2, user3).map(User::getLevel).collect(Collectors.toList());
+
 
         when(userRepository.findFirst5ByOrderByLevelDesc()).thenReturn(List.of(user, user2, user3));
         when(myUserMapper.userToRankingResponse(fields, data)).thenReturn(rankingResponse);
