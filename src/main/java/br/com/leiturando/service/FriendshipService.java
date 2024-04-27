@@ -12,6 +12,7 @@ import br.com.leiturando.repository.FriendshipRepository;
 import br.com.leiturando.repository.UserRepository;
 import com.amazonaws.services.pinpoint.model.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -64,7 +65,7 @@ public class FriendshipService {
                 .collect(Collectors.toList());
     }
 
-    public void unFriend(String email, Long idFriend) {
+    public ResponseEntity<String> unFriend(String email, Long idFriend) {
         User myUser = userRepository.findByEmail(email);
         Optional<User> friend = userRepository.findById(idFriend);
 
@@ -79,6 +80,8 @@ public class FriendshipService {
         }
 
         friendshipRepository.deleteById(friendship.get().getId());
+
+        return ResponseEntity.ok().body("Amizade desfeita.");
     }
 
     private String capitalizeFirstLetter(String input) {
