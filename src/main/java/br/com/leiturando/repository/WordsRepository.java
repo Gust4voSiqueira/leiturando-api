@@ -11,6 +11,6 @@ public interface WordsRepository extends JpaRepository<Words, Long> {
     @Query(value = "SELECT * FROM words ORDER BY RANDOM() LIMIT 7", nativeQuery = true)
     List<Words> randWords();
 
-    @Query(value = "SELECT * FROM words ORDER BY RANDOM() LIMIT 20", nativeQuery = true)
+    @Query(value = "SELECT * FROM words ORDER BY RANDOM() LIMIT 12", nativeQuery = true)
     List<Words> randWordsToConnect();
 }
