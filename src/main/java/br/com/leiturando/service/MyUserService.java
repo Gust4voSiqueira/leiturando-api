@@ -8,27 +8,22 @@ import br.com.leiturando.mapper.MyUserMapper;
 import br.com.leiturando.repository.FriendshipRepository;
 import br.com.leiturando.repository.UserRepository;
 import com.amazonaws.services.pinpoint.model.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class MyUserService {
-    @Autowired
     MyUserMapper myUserMapper;
-
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     PasswordEncoder passwordEncoder;
-
-    @Autowired
     FriendshipRepository friendshipRepository;
 
     public MyUserResponse myUserService(String email) {
@@ -56,9 +51,9 @@ public class MyUserService {
 
         List<String> fields = globalRanking.stream()
                 .map(userField -> getField(userField.getName()))
-                .collect(Collectors.toList());
+                .toList();
 
-        List<Integer> data = globalRanking.stream().map(User::getLevel).collect(Collectors.toList());
+        List<Integer> data = globalRanking.stream().map(User::getLevel).toList();
 
         return myUserMapper.userToRankingResponse(fields, data);
     }
@@ -75,19 +70,19 @@ public class MyUserService {
 
         List<String> fields = friendRanking.stream()
                 .map(userField -> getField(userField.getName()))
-            .collect(Collectors.toList());
+            .toList();
 
-        List<Integer> data = friendRanking.stream().map(User::getLevel).collect(Collectors.toList());
+        List<Integer> data = friendRanking.stream().map(User::getLevel).toList();
 
         return myUserMapper.userToRankingResponse(fields, data);
     }
 
     private User updateUserFields(User user, UpdateUserRequest userRequest) {
-        if (userRequest.getName() != null && !userRequest.getName().equals("")) {
+        if (Objects.nonNull(userRequest.getName()) && !userRequest.getName().isEmpty()) {
             user.setName(userRequest.getName());
         }
 
-        if (userRequest.getCharacterName() != null && !userRequest.getCharacterName().equals("")) {
+        if (userRequest.getCharacterName() != null && !userRequest.getCharacterName().isEmpty()) {
             user.setImage(userRequest.getCharacterName());
         }
 
@@ -95,7 +90,7 @@ public class MyUserService {
             user.setDateOfBirth(userRequest.getDateOfBirth());
         }
 
-        if (userRequest.getNewPassword() != null && !userRequest.getNewPassword().equals("")) {
+        if (userRequest.getNewPassword() != null && !userRequest.getNewPassword().isEmpty()) {
             user.setPassword(passwordEncoder.encode(userRequest.getNewPassword()));
         }
 

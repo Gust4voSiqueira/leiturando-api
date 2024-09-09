@@ -7,6 +7,7 @@ import br.com.leiturando.domain.OperationsMath;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.service.game.CorrectMathService;
 import br.com.leiturando.service.game.MathService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,11 +20,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/math")
+@RequiredArgsConstructor
 public class MathController {
-    @Autowired
     MathService mathService;
-
-    @Autowired
     CorrectMathService correctMathService;
 
     @PostMapping("/getMath")

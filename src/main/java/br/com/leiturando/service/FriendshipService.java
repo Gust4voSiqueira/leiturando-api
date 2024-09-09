@@ -11,27 +11,21 @@ import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.FriendshipRepository;
 import br.com.leiturando.repository.UserRepository;
 import com.amazonaws.services.pinpoint.model.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@RequiredArgsConstructor
 public class FriendshipService {
-    @Autowired
     FriendshipRepository friendshipRepository;
-
-    @Autowired
     FriendRequestRepository requestRepository;
-
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     UserMapper userMapper;
 
     public List<UserResponse> listFriendship(User user) {
@@ -40,15 +34,15 @@ public class FriendshipService {
         return friendshipMyUser
                 .stream()
                 .map(friendship -> {
-                    if(friendship.getUser() != user) {
+                    if(Objects.equals(friendship.getUser(), user)) {
                         return friendship.getUser();
                     }
 
                     return friendship.getFriend();
                 })
-                .filter(friendshipUser -> friendshipUser != user)
+                .filter(friendshipUser -> Objects.equals(friendshipUser, user))
                 .map(friendship -> userMapper.userToResponse(friendship))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<SearchUserResponse> searchUsers(String filter, String email) {
@@ -61,8 +55,7 @@ public class FriendshipService {
                     Integer mutualFriends = searchMutualFriends(myUser, user);
 
                     return userMapper.userToSearchUser(user, mutualFriends, typeFriend(myUser, user));
-                })
-                .collect(Collectors.toList());
+                }).toList();
     }
 
     public ResponseEntity<String> unFriend(String email, Long idFriend) {
@@ -136,13 +129,13 @@ public class FriendshipService {
                 .flatMap(friendship -> Stream.of(friendship.getUser(), friendship.getFriend()))
                 .filter(user -> user != myUser)
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
 
         List<User> listFriendsMyFriendship = userCompared.getFriendships().stream()
                 .flatMap(friendship -> Stream.of(friendship.getUser(), friendship.getFriend()))
                 .filter(user -> user != myUser)
                 .distinct()
-                .collect(Collectors.toList());
+                .toList();
 
         return (int) myListFriends.stream().filter(listFriendsMyFriendship::contains).count();
     }

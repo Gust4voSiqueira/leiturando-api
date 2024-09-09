@@ -4,7 +4,6 @@ import br.com.leiturando.controller.response.math.ListMathResponse;
 import br.com.leiturando.domain.OperationsMath;
 import br.com.leiturando.mapper.MathMapper;
 import br.com.leiturando.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
@@ -14,10 +13,7 @@ import java.util.List;
 
 @Service
 public class MathService {
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     MathMapper mathMapper;
 
     private final SecureRandom random = new SecureRandom();

@@ -6,24 +6,22 @@ import br.com.leiturando.domain.Const;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.service.MyUserService;
 import com.amazonaws.services.pinpoint.model.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
 
-@Controller
 @RestController
+@RequiredArgsConstructor
 public class SecurityController {
-    @Autowired
     MyUserService myUserService;
 
     @GetMapping(value = "/user-auth")
-    @ResponseBody
+
     @Secured({Const.ROLE_CLIENT, Const.ROLE_ADMIN})
     public MyUserResponse user() {
         try {

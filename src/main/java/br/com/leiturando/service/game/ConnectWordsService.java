@@ -4,7 +4,7 @@ import br.com.leiturando.controller.response.connectwords.ListConnectWordsRespon
 import br.com.leiturando.entity.Words;
 import br.com.leiturando.mapper.ConnectWordsMapper;
 import br.com.leiturando.repository.WordsRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,11 +12,9 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ConnectWordsService {
-    @Autowired
     WordsRepository wordsRepository;
-
-    @Autowired
     ConnectWordsMapper connectWordsMapper;
 
     public List<ListConnectWordsResponse[]> getWordsToConnect() {

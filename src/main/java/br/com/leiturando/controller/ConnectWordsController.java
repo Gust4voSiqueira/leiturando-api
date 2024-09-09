@@ -6,7 +6,7 @@ import br.com.leiturando.controller.response.connectwords.ListConnectWordsRespon
 import br.com.leiturando.entity.User;
 import br.com.leiturando.service.game.ConnectWordsService;
 import br.com.leiturando.service.game.CorrectConnectWordsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +15,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/connectWords")
+@RequiredArgsConstructor
 public class ConnectWordsController {
-    @Autowired
     ConnectWordsService connectWordsService;
-
-    @Autowired
     CorrectConnectWordsService correctConnectWordsService;
 
     @GetMapping

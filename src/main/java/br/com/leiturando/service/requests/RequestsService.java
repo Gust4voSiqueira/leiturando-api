@@ -11,7 +11,7 @@ import br.com.leiturando.mapper.UserMapper;
 import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.UserRepository;
 import br.com.leiturando.service.FriendshipService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -21,21 +21,13 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class RequestsService {
 
-    @Autowired
     FriendRequestRepository friendRequestRepository;
-
-    @Autowired
     UserMapper userMapper;
-
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     FriendshipService friendshipService;
-
-    @Autowired
     RequestMapper requestMapper;
 
     public RequestResponse getRequests(String email) {
@@ -56,10 +48,10 @@ public class RequestsService {
             return List.of();
         }
 
-        List<User> requestsReceivedUsers = requests.get().stream().map(request -> userRepository.findById(request.getRequester().getId()).get()).collect(Collectors.toList());
+        List<User> requestsReceivedUsers = requests.get().stream().map(request -> userRepository.findById(request.getRequester().getId()).get()).toList();
 
         return requestsReceivedUsers.stream().map(userLocal -> requestMapper.myUserResponse(userLocal, friendshipService.searchMutualFriends(user, userLocal)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<ListRequestsResponse> searchRequestsSend(User user) {
@@ -73,12 +65,12 @@ public class RequestsService {
                 .get()
                 .stream()
                 .map(request -> userRepository.findById(request.getRequested().getId()).get())
-                .collect(Collectors.toList());
+                .toList();
 
         return requestsSendUsers
                 .stream()
                 .map(userLocal -> requestMapper.myUserResponse(userLocal, friendshipService.searchMutualFriends(user, userLocal)))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<RecommendedFriendsResponse> searchUsersRecommended(User user, List<ListRequestsResponse> requestsOfMyUser, List<UserResponse> friends, List<ListRequestsResponse> requestsSend) {
@@ -89,15 +81,15 @@ public class RequestsService {
             return List.of();
         }
 
-        List<Long> myFriendshipIds = friends.stream().map(UserResponse::getId).collect(Collectors.toList());
-        List<Long> requestsIds = requestsOfMyUser.stream().map(ListRequestsResponse::getId).collect(Collectors.toList());
-        List<Long> requestsSendIds = requestsSend.stream().map(ListRequestsResponse::getId).collect(Collectors.toList());
+        List<Long> myFriendshipIds = friends.stream().map(UserResponse::getId).toList();
+        List<Long> requestsIds = requestsOfMyUser.stream().map(ListRequestsResponse::getId).toList();
+        List<Long> requestsSendIds = requestsSend.stream().map(ListRequestsResponse::getId).toList();
 
         return users.getContent().stream().filter(userLocal -> user != userLocal)
                 .filter(userLocal -> !myFriendshipIds.contains(userLocal.getId()))
                 .filter(userLocal -> !requestsIds.contains(userLocal.getId()))
                 .filter(userLocal -> !requestsSendIds.contains(userLocal.getId()))
                 .map(userLocal -> userMapper.userToRecommendedFriend(userLocal, friendshipService.searchMutualFriends(user, userLocal)))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

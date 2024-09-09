@@ -2,7 +2,7 @@ package br.com.leiturando.config;
 
 import br.com.leiturando.service.MyUserDetailsService;
 import lombok.NoArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,19 +53,15 @@ public class OAuth2ServerConfiguration {
 
     @Configuration
     @EnableAuthorizationServer
+    @RequiredArgsConstructor
     protected static class AuthorizationServerConfiguration extends
             AuthorizationServerConfigurerAdapter {
 
         private TokenStore tokenStore = new InMemoryTokenStore();
 
-        @Autowired
         @Qualifier("authenticationManagerBean")
         private AuthenticationManager authenticationManager;
-
-        @Autowired
         private MyUserDetailsService userDetailsService;
-
-        @Autowired
         private PasswordEncoder passwordEncoder;
 
         @Override

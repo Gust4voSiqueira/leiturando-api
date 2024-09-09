@@ -5,15 +5,15 @@ import br.com.leiturando.domain.Const;
 import br.com.leiturando.entity.Role;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.repository.RoleRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
+@RequiredArgsConstructor
 public class RegisterUserMapper {
-    @Autowired
     RoleRepository roleRepository;
 
     public User requestToUser(RegisterUserRequest userRequest, String image, String password) {

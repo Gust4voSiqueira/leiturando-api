@@ -9,7 +9,7 @@ import br.com.leiturando.service.FriendshipService;
 import br.com.leiturando.service.MyUserService;
 import br.com.leiturando.service.RegisterUserService;
 import com.amazonaws.services.pinpoint.model.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -19,15 +19,11 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/user")
+@RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
     RegisterUserService registerUserService;
-
-    @Autowired
     FriendshipService friendshipService;
-
-    @Autowired
     MyUserService myUserService;
 
     @PostMapping(value = "/register")

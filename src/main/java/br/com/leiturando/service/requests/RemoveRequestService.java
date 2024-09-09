@@ -4,6 +4,7 @@ import br.com.leiturando.entity.FriendRequests;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,11 +13,9 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class RemoveRequestService {
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     FriendRequestRepository friendRequestRepository;
 
     public ResponseEntity<String> removeRequest(String email, Long requesterId) {

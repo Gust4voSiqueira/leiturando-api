@@ -7,27 +7,24 @@ import br.com.leiturando.domain.OperationsMath;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.mapper.MathMapper;
 import br.com.leiturando.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static br.com.leiturando.domain.Const.SCORE_MATH;
 
 @Service
+@RequiredArgsConstructor
 public class CorrectMathService {
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     MathMapper mathMapper;
 
     public FinallyMathResponse correctMath(String email, List<FinallyMathRequest> request) {
         User user = userRepository.findByEmail(email);
         List<GameResponse> mathResponses = request.stream()
                 .map(this::conferResponse)
-                .collect(Collectors.toList());
+                .toList();
 
         int wrong = (int) mathResponses
                 .stream().filter(math -> !math.isCorrect()).count();

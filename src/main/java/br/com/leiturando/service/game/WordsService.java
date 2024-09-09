@@ -22,13 +22,8 @@ import static br.com.leiturando.domain.Const.SCORE_WORDS;
 
 @Service
 public class WordsService {
-    @Autowired
     WordsRepository wordsRepository;
-
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     WordsMapper wordsMapper;
 
 
@@ -36,7 +31,7 @@ public class WordsService {
         List<Words> wordsList = wordsRepository.randWords();
 
         return wordsList.stream().map(word -> wordsMapper.wordsToResponse(word))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public FinallyWordsResponse finallyWordsService(String email, FinallyWordsRequest request) {
@@ -56,7 +51,7 @@ public class WordsService {
         List<GameResponse> incorrectResponse = convertWordToResponse(incorrectWords, false);
 
         List<GameResponse> wordsResponse = Stream.concat(correctResponse.stream(), incorrectResponse.stream())
-                .collect(Collectors.toList());
+                .toList();
 
         return wordsMapper.finallyWords(wordsResponse, user, score);
     }
@@ -64,33 +59,33 @@ public class WordsService {
     private List<GameResponse> convertWordToResponse(List<String> words, boolean isCorrect) {
         return words.stream()
                 .map(word -> wordsMapper.createWordsResponse(word, isCorrect))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<Optional<Words>> getWordsFromDatabase(List<Long> wordIds) {
         return wordIds.stream()
                 .map(word -> wordsRepository.findById(word))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<String> filterCorrectWords(List<Optional<Words>> wordsDatabase, List<String> responses) {
-        var responsesLowerCase = responses.stream().map(String::toLowerCase).collect(Collectors.toList());
+        var responsesLowerCase = responses.stream().map(String::toLowerCase).toList();
 
         return wordsDatabase.stream()
                 .map(word -> word.map(Words::getWord).orElse(null))
                 .filter(Objects::nonNull)
                 .filter(word -> responsesLowerCase.contains(word.toLowerCase()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<String> filterIncorrectWords(List<Optional<Words>> wordsDatabase, List<String> wordsFiltered) {
-        var responsesLowerCase = wordsFiltered.stream().map(String::toLowerCase).collect(Collectors.toList());
+        var responsesLowerCase = wordsFiltered.stream().map(String::toLowerCase).toList();
 
         return wordsDatabase.stream()
                 .map(word -> word.map(Words::getWord).orElse(null))
                 .filter(Objects::nonNull)
                 .filter(word -> !responsesLowerCase.contains(word))
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }

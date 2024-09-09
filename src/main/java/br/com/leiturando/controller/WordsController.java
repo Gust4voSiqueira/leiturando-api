@@ -6,7 +6,7 @@ import br.com.leiturando.controller.response.words.ListWordsResponse;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.service.game.WordsService;
 import com.amazonaws.services.pinpoint.model.BadRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,8 +15,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/words")
+@RequiredArgsConstructor
 public class WordsController {
-    @Autowired
     WordsService wordsService;
 
     @GetMapping

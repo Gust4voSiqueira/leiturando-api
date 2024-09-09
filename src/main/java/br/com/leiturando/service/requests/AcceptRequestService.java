@@ -7,6 +7,7 @@ import br.com.leiturando.mapper.FriendshipMapper;
 import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.FriendshipRepository;
 import br.com.leiturando.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +16,11 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AcceptRequestService {
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     FriendRequestRepository friendRequestRepository;
-
-    @Autowired
     FriendshipMapper friendshipMapper;
-
-    @Autowired
     FriendshipRepository friendshipRepository;
 
     public ResponseEntity<String> acceptRequest(String email, Long requesterId) {

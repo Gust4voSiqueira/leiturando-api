@@ -5,7 +5,6 @@ import br.com.leiturando.entity.User;
 import br.com.leiturando.mapper.RequestMapper;
 import br.com.leiturando.repository.FriendRequestRepository;
 import br.com.leiturando.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -14,13 +13,8 @@ import java.util.Optional;
 
 @Service
 public class SendRequestsService {
-    @Autowired
     FriendRequestRepository friendRequestRepository;
-
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     RequestMapper sendRequestMapper;
 
     public ResponseEntity<String> sendRequest(String email, Long requestedId)  {

@@ -8,6 +8,7 @@ import br.com.leiturando.entity.User;
 import br.com.leiturando.mapper.ConnectWordsMapper;
 import br.com.leiturando.repository.UserRepository;
 import br.com.leiturando.repository.WordsRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +19,10 @@ import java.util.stream.Stream;
 import static br.com.leiturando.domain.Const.SCORE_TO_CONNECT_WORDS;
 
 @Service
+@RequiredArgsConstructor
 public class CorrectConnectWordsService {
-    @Autowired
     WordsRepository wordsRepository;
-
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     ConnectWordsMapper connectWordsMapper;
 
     public FinallyConnectWordsResponse finallyConnectWords(String email, List<FinallyConnectWordsRequest> wordsRequest) {
@@ -36,7 +33,7 @@ public class CorrectConnectWordsService {
                             .word(wordsRepository.findById(word.getIdWord()).get())
                             .response(word.getResponse())
                             .build()
-                ).collect(Collectors.toList());
+                ).toList();
 
         List<ConnectWordsRequest> correctWords = filterCorrectWords(correctConnectWords);
         List<ConnectWordsRequest> incorrectWords = filterIncorrectWords(correctConnectWords);
@@ -50,7 +47,7 @@ public class CorrectConnectWordsService {
         List<GameResponse> incorrectResponse = convertWordToResponse(incorrectWords, false);
 
         List<GameResponse> wordsResponse = Stream.concat(correctResponse.stream(), incorrectResponse.stream())
-                .collect(Collectors.toList());
+                .toList();
 
         return connectWordsMapper.finallyConnectWords(wordsResponse, user, score);
     }
@@ -58,18 +55,18 @@ public class CorrectConnectWordsService {
     private List<ConnectWordsRequest> filterCorrectWords(List<ConnectWordsRequest> responses) {
         return responses.stream()
                 .filter(wordResponse -> wordResponse.getWord().getWord().equals(wordResponse.getResponse()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<ConnectWordsRequest> filterIncorrectWords(List<ConnectWordsRequest> responses) {
         return responses.stream()
                 .filter(wordResponse -> !wordResponse.getWord().getWord().equals(wordResponse.getResponse()))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     private List<GameResponse> convertWordToResponse(List<ConnectWordsRequest> words, boolean isCorrect) {
         return words.stream()
                 .map(word -> connectWordsMapper.finallyConnectWordsResponse(word.getResponse(), isCorrect))
-                .collect(Collectors.toList());
+                .toList();
     }
 }

@@ -4,8 +4,8 @@ import br.com.leiturando.controller.request.user.RegisterUserRequest;
 import br.com.leiturando.entity.User;
 import br.com.leiturando.mapper.RegisterUserMapper;
 import br.com.leiturando.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,19 +15,15 @@ import java.util.Objects;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class RegisterUserService {
-    @Autowired
     UserRepository userRepository;
-
-    @Autowired
     PasswordEncoder passwordEncoder;
-
-    @Autowired
     RegisterUserMapper registerUserMapper;
 
     public ResponseEntity<String> registerService(RegisterUserRequest userRequest) {
         User existingUser = userRepository.findByEmail(userRequest.getEmail());
-        if (existingUser != null) {
+        if (Objects.nonNull(existingUser)) {
             return new ResponseEntity<>("Já existe um usuário com este e-mail.", HttpStatus.CONFLICT);
         }
 

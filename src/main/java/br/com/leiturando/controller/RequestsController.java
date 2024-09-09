@@ -10,6 +10,7 @@ import br.com.leiturando.service.requests.SendRequestsService;
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.amazonaws.services.pinpoint.model.BadRequestException;
 import com.amazonaws.services.pinpoint.model.InternalServerErrorException;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.procedure.ParameterStrategyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -19,17 +20,11 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/request")
+@RequiredArgsConstructor
 public class RequestsController {
-    @Autowired
     SendRequestsService sendRequestsService;
-
-    @Autowired
     AcceptRequestService acceptRequestService;
-
-    @Autowired
     RequestsService requestsService;
-
-    @Autowired
     RemoveRequestService removeRequestService;
 
     @GetMapping("/getRequests")
