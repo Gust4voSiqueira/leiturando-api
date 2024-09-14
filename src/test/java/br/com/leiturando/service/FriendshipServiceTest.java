@@ -93,7 +93,7 @@ class FriendshipServiceTest {
     @Test
     void listFriendshipUserSuccess() {
         when(friendshipRepository.findAllByUserOrFriend(user1)).thenReturn(friendship);
-        when(userMapper.userToResponse(user2)).thenReturn(userResponse);
+        when(userMapper.userToResponse(user1)).thenReturn(userResponse);
 
         var result = friendshipService.listFriendship(user1);
 
@@ -105,7 +105,7 @@ class FriendshipServiceTest {
         friendship = List.of(new Friendship(1L, user2, user1));
 
         when(friendshipRepository.findAllByUserOrFriend(user1)).thenReturn(friendship);
-        when(userMapper.userToResponse(user2)).thenReturn(userResponse);
+        when(userMapper.userToResponse(user1)).thenReturn(userResponse);
 
         var result = friendshipService.listFriendship(user1);
 

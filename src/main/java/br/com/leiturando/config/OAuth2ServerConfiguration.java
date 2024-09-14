@@ -48,7 +48,6 @@ public class OAuth2ServerConfiguration {
                     .antMatchers(HttpMethod.POST, "/user/register").permitAll()
                     .anyRequest().fullyAuthenticated();
         }
-
     }
 
     @Configuration
@@ -60,13 +59,12 @@ public class OAuth2ServerConfiguration {
         private TokenStore tokenStore = new InMemoryTokenStore();
 
         @Qualifier("authenticationManagerBean")
-        private AuthenticationManager authenticationManager;
-        private MyUserDetailsService userDetailsService;
-        private PasswordEncoder passwordEncoder;
+        private final AuthenticationManager authenticationManager;
+        private final MyUserDetailsService userDetailsService;
+        private final PasswordEncoder passwordEncoder;
 
         @Override
-        public void configure(AuthorizationServerEndpointsConfigurer endpoints)
-                throws Exception {
+        public void configure(AuthorizationServerEndpointsConfigurer endpoints) {
             endpoints
                     .tokenStore(this.tokenStore)
                     .authenticationManager(this.authenticationManager)
